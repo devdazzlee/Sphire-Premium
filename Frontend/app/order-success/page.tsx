@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Package, Truck, Calendar, ArrowLeft } from "lucide-react"
+import { ordersApi } from "@/lib/api"
+import { tokenManager } from "@/lib/api"
 
 export default function OrderSuccessPage() {
   const searchParams = useSearchParams()
@@ -16,30 +18,51 @@ export default function OrderSuccessPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (orderNumber) {
-      // In a real app, you would fetch the order details here
-      // For now, we'll simulate the order data
+    const fetchOrderDetails = async () => {
+      if (!orderNumber) return
+      
+      try {
+        const token = tokenManager.getToken()
+        if (token) {
+          // Try to fetch real order data
+          const response = await ordersApi.getAll(token, { page: 1, limit: 100 })
+          if (response.status === 'success' && response.data) {
+            const foundOrder = response.data.orders.find((o: any) => o.orderNumber === orderNumber)
+            if (foundOrder) {
+              setOrder(foundOrder)
+              setIsLoading(false)
+              return
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching order details:', error)
+      }
+      
+      // Fallback to mock data with PKR currency
       setTimeout(() => {
         setOrder({
           orderNumber,
-          status: 'pending',
-          total: 125.99,
+          orderStatus: 'pending',
+          total: 12599, // PKR amount
           items: [
-            { name: 'Radiance Renewal Serum', quantity: 1, price: 89.99 },
-            { name: 'Luxury Hydrating Moisturizer', quantity: 1, price: 35.99 }
+            { name: 'Radiance Renewal Serum', quantity: 1, price: 8999 },
+            { name: 'Luxury Hydrating Moisturizer', quantity: 1, price: 3599 }
           ],
           shippingAddress: {
             street: '123 Main Street',
-            city: 'New York',
-            state: 'NY',
-            zipCode: '10001',
-            country: 'United States'
+            city: 'Karachi',
+            state: 'Sindh',
+            zipCode: '75000',
+            country: 'Pakistan'
           },
           estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
         })
         setIsLoading(false)
       }, 1000)
     }
+
+    fetchOrderDetails()
   }, [orderNumber])
 
   const getStatusColor = (status: string) => {
@@ -119,8 +142,8 @@ export default function OrderSuccessPage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="font-medium">Order Status</span>
-                    <Badge className={getStatusColor(order.status)}>
-                      {getStatusText(order.status)}
+                    <Badge className={getStatusColor(order.orderStatus || order.status)}>
+                      {getStatusText(order.orderStatus || order.status)}
                     </Badge>
                   </div>
                   
@@ -132,7 +155,7 @@ export default function OrderSuccessPage() {
                           <p className="font-medium">{item.name}</p>
                           <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                         </div>
-                        <p className="font-medium">${item.price.toFixed(2)}</p>
+                        <p className="font-medium">PKR {item.price.toFixed(2)}</p>
                       </div>
                     ))}
                   </div>
@@ -140,7 +163,7 @@ export default function OrderSuccessPage() {
                   <div className="pt-4 border-t">
                     <div className="flex justify-between font-medium text-lg">
                       <span>Total</span>
-                      <span>${order.total.toFixed(2)}</span>
+                      <span>PKR {order.total.toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -155,11 +178,11 @@ export default function OrderSuccessPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-1">
-                    <p className="font-medium">{order.shippingAddress.street}</p>
+                    <p className="font-medium">{order.shippingAddress?.street || 'N/A'}</p>
                     <p className="text-gray-600">
-                      {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
+                      {order.shippingAddress?.city || 'N/A'}, {order.shippingAddress?.state || 'N/A'} {order.shippingAddress?.zipCode || 'N/A'}
                     </p>
-                    <p className="text-gray-600">{order.shippingAddress.country}</p>
+                    <p className="text-gray-600">{order.shippingAddress?.country || 'N/A'}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -177,12 +200,12 @@ export default function OrderSuccessPage() {
                     <div>
                       <p className="font-medium">Estimated Delivery</p>
                       <p className="text-sm text-gray-600">
-                        {new Date(order.estimatedDelivery).toLocaleDateString('en-US', {
+                        {order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString('en-US', {
                           weekday: 'long',
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
-                        })}
+                        }) : 'TBD'}
                       </p>
                     </div>
                   </div>

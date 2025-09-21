@@ -66,6 +66,38 @@ export interface Product {
   reviewsCount?: number;
 }
 
+export interface Review {
+  _id: string;
+  user: {
+    _id: string;
+    name: string;
+    avatar?: string;
+  };
+  product: string;
+  rating: number;
+  title: string;
+  comment: string;
+  images: string[];
+  isVerifiedPurchase: boolean;
+  isApproved: boolean;
+  isActive: boolean;
+  helpfulVotes: number;
+  adminResponse?: {
+    text: string;
+    respondedBy: string;
+    respondedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReviewStats {
+  totalReviews: number;
+  averageRating: number;
+  ratingDistribution: { [key: number]: number };
+  verifiedReviews: number;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
@@ -189,12 +221,112 @@ export const productsApi = {
     return response.json();
   },
 
-  getReviews: async (id: string, page?: number, limit?: number): Promise<ApiResponse<{ reviews: any[]; pagination: any }>> => {
+  getReviews: async (id: string, page?: number, limit?: number, sort?: string): Promise<ApiResponse<{ reviews: Review[]; stats: ReviewStats; pagination: any }>> => {
     const searchParams = new URLSearchParams();
     if (page) searchParams.append('page', page.toString());
     if (limit) searchParams.append('limit', limit.toString());
+    if (sort) searchParams.append('sort', sort);
     
-    const response = await fetch(`${API_BASE_URL}/products/${id}/reviews?${searchParams}`);
+    const response = await fetch(`${API_BASE_URL}/reviews/product/${id}?${searchParams}`);
+    return response.json();
+  },
+};
+
+// Reviews API
+export const reviewsApi = {
+  getByProduct: async (productId: string, params?: {
+    page?: number;
+    limit?: number;
+    sort?: string;
+  }): Promise<ApiResponse<{ reviews: Review[]; stats: ReviewStats; pagination: any }>> => {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) searchParams.append(key, value.toString());
+      });
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/reviews/product/${productId}?${searchParams}`);
+    return response.json();
+  },
+
+  create: async (token: string, reviewData: {
+    productId: string;
+    rating: number;
+    title: string;
+    comment: string;
+    images?: string[];
+  }): Promise<ApiResponse<{ review: Review }>> => {
+    const response = await fetch(`${API_BASE_URL}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(reviewData),
+    });
+    return response.json();
+  },
+
+  getUserReviews: async (token: string, params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<{ reviews: Review[]; pagination: any }>> => {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) searchParams.append(key, value.toString());
+      });
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/reviews/user?${searchParams}`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.json();
+  },
+
+  update: async (token: string, reviewId: string, reviewData: {
+    rating?: number;
+    title?: string;
+    comment?: string;
+    images?: string[];
+  }): Promise<ApiResponse<{ review: Review }>> => {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(reviewData),
+    });
+    return response.json();
+  },
+
+  delete: async (token: string, reviewId: string): Promise<ApiResponse<void>> => {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.json();
+  },
+
+  markHelpful: async (token: string, reviewId: string): Promise<ApiResponse<{ helpfulVotes: number }>> => {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.json();
+  },
+
+  report: async (token: string, reviewId: string, reason: string): Promise<ApiResponse<void>> => {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ reason }),
+    });
     return response.json();
   },
 };

@@ -55,7 +55,7 @@ export function AccountDropdown() {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
-        className="w-56 z-[60] bg-white border border-gray-200 shadow-xl" 
+        className="w-56 z-[9999] bg-white border border-gray-200 shadow-xl data-[state=open]:animate-none data-[state=closed]:animate-none" 
         align="end" 
         forceMount
         sideOffset={5}

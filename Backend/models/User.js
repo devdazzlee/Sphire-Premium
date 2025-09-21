@@ -62,10 +62,16 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: function(v) {
-        // Allow empty phone numbers or valid phone formats
-        return !v || /^[\+]?[0-9\-\s\(\)\.]{7,20}$/.test(v);
+        // Allow empty phone numbers
+        if (!v) return true;
+        
+        // Remove all non-digit characters for validation
+        const cleanPhone = v.replace(/[^\d]/g, '');
+        
+        // Very permissive validation - accept any phone number with 7-15 digits
+        return cleanPhone.length >= 7 && cleanPhone.length <= 15;
       },
-      message: 'Please provide a valid phone number'
+      message: 'Please provide a valid phone number (7-15 digits)'
     }
   },
   avatar: {

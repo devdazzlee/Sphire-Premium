@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const [addresses, setAddresses] = useState<Address[]>([])
   const [isAddingAddress, setIsAddingAddress] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
+  const [orderCompleted, setOrderCompleted] = useState(false)
 
   const [addressForm, setAddressForm] = useState({
     type: "home" as "home" | "work" | "other",
@@ -41,18 +42,28 @@ export default function CheckoutPage() {
   const [orderNotes, setOrderNotes] = useState("")
 
   useEffect(() => {
+    console.log('=== CHECKOUT USEEFFECT ===') // Debug log
+    console.log('isAuthenticated:', isAuthenticated) // Debug log
+    console.log('items.length:', items.length) // Debug log
+    console.log('isLoading:', isLoading) // Debug log
+    console.log('orderCompleted:', orderCompleted) // Debug log
+    
     if (!isAuthenticated) {
+      console.log('Not authenticated, redirecting to login...') // Debug log
       router.push('/login')
       return
     }
 
-    if (items.length === 0) {
+    // Only redirect to cart if items are empty, we're not loading, and order wasn't just completed
+    if (items.length === 0 && !isLoading && !orderCompleted) {
+      console.log('No items in cart, redirecting to cart...') // Debug log
       router.push('/cart')
       return
     }
 
+    console.log('Fetching addresses...') // Debug log
     fetchAddresses()
-  }, [isAuthenticated, items.length, router])
+  }, [isAuthenticated, items.length, router, isLoading, orderCompleted])
 
   const fetchAddresses = async () => {
     try {
@@ -127,17 +138,29 @@ export default function CheckoutPage() {
   }
 
   const handlePlaceOrder = async () => {
+    console.log('=== PLACE ORDER CLICKED ===') // Debug log
+    console.log('Selected address:', selectedAddress) // Debug log
+    console.log('Cart items:', items) // Debug log
+    
     if (!selectedAddress) {
       toast.error("Please select a shipping address")
       return
     }
 
+    // Now that navigation is working, restore full order functionality
+
     try {
       setIsLoading(true)
+      console.log('Starting order creation...') // Debug log
       
       const token = localStorage.getItem('auth_token')
+      console.log('Token exists:', !!token) // Debug log
+      
       if (!token) {
         toast.error("Please log in to place an order")
+        // Force redirect to home instead of login
+        await clearCart()
+        router.push('/')
         return
       }
 
@@ -145,38 +168,76 @@ export default function CheckoutPage() {
       if (!isTokenValid(token)) {
         toast.error("Your session has expired or is invalid. Please log in again.")
         localStorage.removeItem('auth_token')
-        router.push('/login')
+        await clearCart()
+        router.push('/') // Force redirect to home
         return
       }
 
       if (isTokenExpired(token)) {
         toast.error("Your session has expired. Please log in again.")
         localStorage.removeItem('auth_token')
-        router.push('/login')
+        await clearCart()
+        router.push('/') // Force redirect to home
         return
       }
 
+      console.log('Calling ordersApi.create...') // Debug log
+      console.log('Order data being sent:', {
+        shippingAddress: selectedAddress,
+        notes: orderNotes,
+      }) // Debug log
+      
       const response = await ordersApi.create(token, {
         shippingAddress: selectedAddress,
         notes: orderNotes,
       })
 
-      console.log('Order creation response:', response) // Debug log
-
+      console.log('=== ORDER API RESPONSE ===') // Debug log
+      console.log('Full response:', JSON.stringify(response, null, 2)) // Debug log
+      console.log('Response status:', response.status) // Debug log
+      console.log('Response data:', response.data) // Debug log
+      
       if (response.status === 'success' && response.data) {
+        // Set order completed flag to prevent cart redirect
+        setOrderCompleted(true)
+        
+        // Clear cart after successful order
         await clearCart()
+        console.log('Cart cleared after successful order') // Debug log
+        
         toast.success("Order placed successfully!")
-        console.log('Redirecting to home page...') // Debug log
-        router.push('/')
+        
+        // Navigate to order success page with order number
+        const orderNumber = response.data.order?.orderNumber || (response.data as any).orderNumber || (response.data as any)._id
+        console.log('Order number found:', orderNumber) // Debug log
+        
+        if (orderNumber) {
+          router.push(`/order-success?orderNumber=${orderNumber}`)
+        } else {
+          // Fallback to home page if no order number
+          console.log('No order number, redirecting to home...') // Debug log
+          router.push('/')
+        }
       } else {
-        console.error('Order creation failed:', response) // Debug log
+        console.log('Order creation failed, showing error and redirecting to home...') // Debug log
         toast.error(response.message || "Failed to place order")
+        
+        // Clear cart even on failure to prevent stuck state
+        await clearCart()
+        router.push('/') // Immediate redirect to home
       }
     } catch (err: any) {
-      console.error('Order creation error:', err) // Debug log
+      console.log('=== ORDER CREATION ERROR ===') // Debug log
+      console.error('Error details:', err) // Debug log
       toast.error(err.message || "Failed to place order")
+      
+      // Always clear cart and redirect to home on error
+      await clearCart()
+      console.log('Error occurred, clearing cart and redirecting to home...') // Debug log
+      router.push('/') // Immediate redirect to home
     } finally {
       setIsLoading(false)
+      console.log('=== PLACE ORDER COMPLETED ===') // Debug log
     }
   }
 
@@ -195,7 +256,7 @@ export default function CheckoutPage() {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => router.back()}
+            onClick={() => router.push('/cart')}
             className="mb-4 text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

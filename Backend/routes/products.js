@@ -220,46 +220,14 @@ router.get('/:id', validateObjectId('id'), optionalAuth, async (req, res) => {
 });
 
 // @route   GET /api/products/:id/reviews
-// @desc    Get product reviews
+// @desc    Get product reviews (redirect to reviews route)
 // @access  Public
-router.get('/:id/reviews', validateObjectId('id'), validatePagination, async (req, res) => {
-  try {
-    const { page = 1, limit = 10 } = req.query;
-    
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Product not found'
-      });
-    }
-
-    // For now, return empty reviews array
-    // In a real application, you would have a separate Review model
-    const reviews = [];
-    const totalReviews = 0;
-
-    res.json({
-      status: 'success',
-      data: {
-        reviews,
-        pagination: {
-          currentPage: parseInt(page),
-          totalPages: Math.ceil(totalReviews / parseInt(limit)),
-          totalReviews,
-          hasNextPage: parseInt(page) < Math.ceil(totalReviews / parseInt(limit)),
-          hasPrevPage: parseInt(page) > 1,
-          limit: parseInt(limit)
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Get product reviews error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error'
-    });
-  }
+router.get('/:id/reviews', (req, res) => {
+  // Redirect to the dedicated reviews route
+  const { id } = req.params;
+  const queryParams = new URLSearchParams(req.query).toString();
+  const redirectUrl = `/api/reviews/product/${id}${queryParams ? `?${queryParams}` : ''}`;
+  res.redirect(redirectUrl);
 });
 
 // @route   POST /api/products

@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useToastContext } from "@/components/ui/toast"
-import { ordersApi, type Order } from "@/lib/api"
+import { ordersApi, type Order, tokenManager } from "@/lib/api"
 import { Package, Search, Calendar, MapPin, Eye, ArrowLeft } from "lucide-react"
 
 export default function OrdersPage() {
@@ -29,7 +29,13 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     try {
       setIsLoading(true)
-      const response = await ordersApi.getAll(user!.email)
+      const token = tokenManager.getToken()
+      if (!token) {
+        error("Error", "Authentication token not found. Please log in again.")
+        return
+      }
+      
+      const response = await ordersApi.getAll(token)
       if (response.status === 'success' && response.data) {
         setOrders(response.data.orders)
       } else {

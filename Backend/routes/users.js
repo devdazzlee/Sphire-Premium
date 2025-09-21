@@ -43,7 +43,7 @@ router.get('/profile', protect, async (req, res) => {
 // @route   PUT /api/users/profile
 // @desc    Update user profile
 // @access  Private
-router.put('/profile', validateUserUpdate, async (req, res) => {
+router.put('/profile', protect, validateUserUpdate, async (req, res) => {
   try {
     const { name, phone } = req.body;
     

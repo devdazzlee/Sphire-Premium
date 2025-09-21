@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Star, MapPin, Send, ThumbsUp } from "lucide-react"
+import { Star, Send, ThumbsUp } from "lucide-react"
 import { useToastContext } from "@/components/ui/toast"
+import { reviewsApi, tokenManager } from "@/lib/api"
 
 interface ReviewFormProps {
   productId: string
@@ -17,9 +18,8 @@ interface ReviewFormProps {
 export function ReviewForm({ productId, productName, onReviewSubmitted }: ReviewFormProps) {
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
-  const [reviewText, setReviewText] = useState("")
-  const [userName, setUserName] = useState("")
-  const [userLocation, setUserLocation] = useState("")
+  const [title, setTitle] = useState("")
+  const [comment, setComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { success, error } = useToastContext()
 
@@ -43,46 +43,51 @@ export function ReviewForm({ productId, productName, onReviewSubmitted }: Review
       return
     }
 
-    if (!reviewText.trim()) {
-      error("Please write a review", "Your review text cannot be empty")
+    if (!title.trim()) {
+      error("Please provide a title", "Review title is required")
       return
     }
 
-    if (!userName.trim()) {
-      error("Please provide your name", "Your name is required for the review")
+    if (!comment.trim()) {
+      error("Please write a review", "Your review comment cannot be empty")
+      return
+    }
+
+    const token = tokenManager.getToken()
+    if (!token) {
+      error("Authentication Required", "Please log in to submit a review")
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      // Simulate API call - replace with actual API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Here you would make the actual API call to submit the review
-      // const response = await reviewsApi.createReview({
-      //   productId,
-      //   rating,
-      //   review: reviewText,
-      //   userName,
-      //   userLocation
-      // })
+      const response = await reviewsApi.create(token, {
+        productId,
+        rating,
+        title: title.trim(),
+        comment: comment.trim(),
+      })
 
-      success(
-        "Review Submitted Successfully!", 
-        "Thank you for your feedback. Your review will be published after moderation."
-      )
+      if (response.status === 'success') {
+        success(
+          "Review Submitted Successfully!", 
+          "Thank you for your feedback. Your review will be published after moderation."
+        )
 
-      // Reset form
-      setRating(0)
-      setReviewText("")
-      setUserName("")
-      setUserLocation("")
-      
-      // Notify parent component
-      onReviewSubmitted?.()
+        // Reset form
+        setRating(0)
+        setTitle("")
+        setComment("")
+        
+        // Notify parent component
+        onReviewSubmitted?.()
+      } else {
+        error("Failed to Submit Review", response.message || "Please try again later")
+      }
       
     } catch (err) {
+      console.error('Review submission error:', err)
       error("Failed to Submit Review", "Please try again later")
     } finally {
       setIsSubmitting(false)
@@ -135,60 +140,49 @@ export function ReviewForm({ productId, productName, onReviewSubmitted }: Review
           </div>
         </div>
 
-        {/* User Name */}
+        {/* Review Title */}
         <div>
-          <Label htmlFor="userName" className="text-lg font-semibold text-gray-800 mb-2 block">
-            Your Name *
+          <Label htmlFor="title" className="text-lg font-semibold text-gray-800 mb-2 block">
+            Review Title *
           </Label>
           <Input
-            id="userName"
+            id="title"
             type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            placeholder="Enter your full name"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Summarize your experience in a few words"
             className="h-12 text-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            maxLength={100}
             required
           />
+          <p className="text-sm text-gray-500 mt-1">
+            {title.length}/100 characters
+          </p>
         </div>
 
-        {/* User Location */}
+        {/* Review Comment */}
         <div>
-          <Label htmlFor="userLocation" className="text-lg font-semibold text-gray-800 mb-2 block">
-            <MapPin className="w-5 h-5 inline mr-2" />
-            Your Location (Optional)
-          </Label>
-          <Input
-            id="userLocation"
-            type="text"
-            value={userLocation}
-            onChange={(e) => setUserLocation(e.target.value)}
-            placeholder="e.g., Karachi, Pakistan"
-            className="h-12 text-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* Review Text */}
-        <div>
-          <Label htmlFor="reviewText" className="text-lg font-semibold text-gray-800 mb-2 block">
+          <Label htmlFor="comment" className="text-lg font-semibold text-gray-800 mb-2 block">
             Your Review *
           </Label>
           <Textarea
-            id="reviewText"
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
+            id="comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
             placeholder="Share your detailed experience with this product. What did you like? What could be improved?"
             className="min-h-32 text-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 resize-none"
+            maxLength={1000}
             required
           />
           <p className="text-sm text-gray-500 mt-2">
-            {reviewText.length}/500 characters
+            {comment.length}/1000 characters
           </p>
         </div>
 
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={isSubmitting || rating === 0 || !reviewText.trim() || !userName.trim()}
+          disabled={isSubmitting || rating === 0 || !title.trim() || !comment.trim()}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 text-lg rounded-xl transition-all duration-300 hover:scale-105 disabled:scale-100 disabled:opacity-50"
         >
           {isSubmitting ? (

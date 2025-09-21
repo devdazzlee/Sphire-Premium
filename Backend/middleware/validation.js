@@ -54,7 +54,7 @@ export const validateUserUpdate = [
     .withMessage('Name must be between 2 and 50 characters'),
   body('phone')
     .optional()
-    .matches(/^[\+]?[1-9][\d]{0,15}$/)
+    .matches(/^[\+]?[0-9][\d]{6,14}$/)
     .withMessage('Please provide a valid phone number'),
   handleValidationErrors
 ];

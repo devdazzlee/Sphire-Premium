@@ -1,107 +1,86 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Star, MapPin, Calendar, ThumbsUp, Flag, User } from "lucide-react"
+import { Star, Calendar, ThumbsUp, Flag, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { reviewsApi, tokenManager, type Review, type ReviewStats } from "@/lib/api"
+import { useToastContext } from "@/components/ui/toast"
 
-interface Review {
-  _id: string
-  product: string
-  user: {
-    _id: string
-    name: string
-    location?: string
-  }
-  rating: number
-  review: string
-  location?: string
-  isApproved: boolean
-  helpful: number
-  createdAt: string
-}
+// Remove duplicate interface since we're importing it from API
 
 interface ProductReviewsProps {
   productId: string
-  reviews?: Review[]
-  averageRating?: number
-  totalReviews?: number
+  onReviewSubmitted?: () => void
 }
 
-export function ProductReviews({ productId, reviews = [], averageRating = 0, totalReviews = 0 }: ProductReviewsProps) {
+export function ProductReviews({ productId, onReviewSubmitted }: ProductReviewsProps) {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [stats, setStats] = useState<ReviewStats>({
+    totalReviews: 0,
+    averageRating: 0,
+    ratingDistribution: {},
+    verifiedReviews: 0
+  })
   const [displayedReviews, setDisplayedReviews] = useState<Review[]>([])
   const [showAll, setShowAll] = useState(false)
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'rating'>('newest')
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'rating_high' | 'rating_low' | 'helpful' | 'verified'>('newest')
+  const [isLoading, setIsLoading] = useState(true)
+  const { error, success } = useToastContext()
 
-  // Mock data for demonstration - replace with actual API call
-  const mockReviews: Review[] = [
-    {
-      _id: "1",
-      product: productId,
-      user: {
-        _id: "user1",
-        name: "Sarah Ahmed",
-        location: "Karachi, Pakistan"
-      },
-      rating: 5,
-      review: "Absolutely love this product! The quality is outstanding and it arrived faster than expected. Will definitely order again.",
-      location: "Karachi, Pakistan",
-      isApproved: true,
-      helpful: 12,
-      createdAt: "2024-01-15T10:30:00Z"
-    },
-    {
-      _id: "2",
-      product: productId,
-      user: {
-        _id: "user2",
-        name: "Muhammad Hassan",
-        location: "Lahore, Pakistan"
-      },
-      rating: 4,
-      review: "Good product overall. The packaging could be better, but the quality is solid. Recommended for the price.",
-      location: "Lahore, Pakistan",
-      isApproved: true,
-      helpful: 8,
-      createdAt: "2024-01-12T14:20:00Z"
-    },
-    {
-      _id: "3",
-      product: productId,
-      user: {
-        _id: "user3",
-        name: "Fatima Khan",
-        location: "Islamabad, Pakistan"
-      },
-      rating: 5,
-      review: "Exceeded my expectations! The customer service was excellent and the product quality is top-notch. Highly recommended!",
-      location: "Islamabad, Pakistan",
-      isApproved: true,
-      helpful: 15,
-      createdAt: "2024-01-10T09:15:00Z"
-    },
-    {
-      _id: "4",
-      product: productId,
-      user: {
-        _id: "user4",
-        name: "Ali Raza",
-        location: "Rawalpindi, Pakistan"
-      },
-      rating: 3,
-      review: "Decent product but took longer to arrive than expected. Quality is okay for the price point.",
-      location: "Rawalpindi, Pakistan",
-      isApproved: true,
-      helpful: 3,
-      createdAt: "2024-01-08T16:45:00Z"
-    }
-  ]
-
+  // Fetch reviews from API
   useEffect(() => {
-    // Use mock data if no reviews provided
-    const reviewsToUse = reviews.length > 0 ? reviews : mockReviews
-    
-    // Sort reviews based on selected option
-    let sortedReviews = [...reviewsToUse]
+    const fetchReviews = async () => {
+      try {
+        setIsLoading(true)
+        const response = await reviewsApi.getByProduct(productId, {
+          page: 1,
+          limit: 50,
+          sort: sortBy
+        })
+
+        if (response.status === 'success' && response.data) {
+          setReviews(response.data.reviews)
+          setStats(response.data.stats)
+        }
+      } catch (err) {
+        console.error('Error fetching reviews:', err)
+        error('Failed to Load Reviews', 'Unable to load product reviews')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchReviews()
+  }, [productId, sortBy])
+
+  // Handle review submission callback
+  useEffect(() => {
+    if (onReviewSubmitted) {
+      // Refresh reviews when a new one is submitted
+      const fetchReviews = async () => {
+        try {
+          const response = await reviewsApi.getByProduct(productId, {
+            page: 1,
+            limit: 50,
+            sort: sortBy
+          })
+
+          if (response.status === 'success' && response.data) {
+            setReviews(response.data.reviews)
+            setStats(response.data.stats)
+          }
+        } catch (err) {
+          console.error('Error refreshing reviews:', err)
+        }
+      }
+
+      fetchReviews()
+    }
+  }, [onReviewSubmitted, productId, sortBy])
+
+  // Sort and display reviews
+  useEffect(() => {
+    let sortedReviews = [...reviews]
     
     switch (sortBy) {
       case 'newest':
@@ -110,8 +89,21 @@ export function ProductReviews({ productId, reviews = [], averageRating = 0, tot
       case 'oldest':
         sortedReviews.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
         break
-      case 'rating':
+      case 'rating_high':
         sortedReviews.sort((a, b) => b.rating - a.rating)
+        break
+      case 'rating_low':
+        sortedReviews.sort((a, b) => a.rating - b.rating)
+        break
+      case 'helpful':
+        sortedReviews.sort((a, b) => b.helpfulVotes - a.helpfulVotes)
+        break
+      case 'verified':
+        sortedReviews.sort((a, b) => {
+          if (a.isVerifiedPurchase && !b.isVerifiedPurchase) return -1
+          if (!a.isVerifiedPurchase && b.isVerifiedPurchase) return 1
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        })
         break
     }
     
@@ -138,6 +130,72 @@ export function ProductReviews({ productId, reviews = [], averageRating = 0, tot
     ))
   }
 
+  const handleMarkHelpful = async (reviewId: string) => {
+    const token = tokenManager.getToken()
+    if (!token) {
+      error('Authentication Required', 'Please log in to mark reviews as helpful')
+      return
+    }
+
+    try {
+      const response = await reviewsApi.markHelpful(token, reviewId)
+      if (response.status === 'success') {
+        // Update the review in the local state
+        setReviews(prevReviews => 
+          prevReviews.map(review => 
+            review._id === reviewId 
+              ? { ...review, helpfulVotes: response.data?.helpfulVotes || review.helpfulVotes + 1 }
+              : review
+          )
+        )
+        success('Thank you!', 'Your feedback has been recorded')
+      }
+    } catch (err) {
+      error('Failed to Mark Helpful', 'Please try again later')
+    }
+  }
+
+  const handleReportReview = async (reviewId: string, reason: string) => {
+    const token = tokenManager.getToken()
+    if (!token) {
+      error('Authentication Required', 'Please log in to report reviews')
+      return
+    }
+
+    try {
+      const response = await reviewsApi.report(token, reviewId, reason)
+      if (response.status === 'success') {
+        success('Review Reported', 'Thank you for your feedback. We will review this report.')
+      }
+    } catch (err) {
+      error('Failed to Report Review', 'Please try again later')
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+              <div className="animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-20 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Reviews Header */}
@@ -147,19 +205,19 @@ export function ProductReviews({ productId, reviews = [], averageRating = 0, tot
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Customer Reviews</h3>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                {renderStars(Math.round(averageRating))}
+                {renderStars(Math.round(stats.averageRating))}
                 <span className="text-lg font-semibold text-gray-700">
-                  {averageRating.toFixed(1)}
+                  {stats.averageRating.toFixed(1)}
                 </span>
               </div>
               <span className="text-gray-600">
-                Based on {totalReviews || displayedReviews.length} reviews
+                Based on {stats.totalReviews} reviews
               </span>
             </div>
           </div>
           
           {/* Sort Options */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant={sortBy === 'newest' ? 'default' : 'outline'}
               size="sm"
@@ -177,37 +235,55 @@ export function ProductReviews({ productId, reviews = [], averageRating = 0, tot
               Oldest
             </Button>
             <Button
-              variant={sortBy === 'rating' ? 'default' : 'outline'}
+              variant={sortBy === 'rating_high' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSortBy('rating')}
+              onClick={() => setSortBy('rating_high')}
               className="text-sm"
             >
               Highest Rating
+            </Button>
+            <Button
+              variant={sortBy === 'helpful' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy('helpful')}
+              className="text-sm"
+            >
+              Most Helpful
+            </Button>
+            <Button
+              variant={sortBy === 'verified' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy('verified')}
+              className="text-sm"
+            >
+              Verified
             </Button>
           </div>
         </div>
 
         {/* Rating Distribution */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {[5, 4, 3, 2, 1].map((stars) => {
-            const count = displayedReviews.filter(r => r.rating === stars).length
-            const percentage = displayedReviews.length > 0 ? (count / displayedReviews.length) * 100 : 0
-            
-            return (
-              <div key={stars} className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-600">{stars}</span>
-                <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                <div className="flex-1 bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${percentage}%` }}
-                  />
+        {stats.totalReviews > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {[5, 4, 3, 2, 1].map((stars) => {
+              const count = stats.ratingDistribution[stars] || 0
+              const percentage = stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0
+              
+              return (
+                <div key={stars} className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-600">{stars}</span>
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span className="text-sm text-gray-500 w-8">{count}</span>
                 </div>
-                <span className="text-sm text-gray-500 w-8">{count}</span>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Reviews List */}
@@ -228,11 +304,10 @@ export function ProductReviews({ productId, reviews = [], averageRating = 0, tot
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
                   <div className="flex items-center gap-3">
                     <h4 className="font-semibold text-gray-900">{review.user.name}</h4>
-                    {review.user.location && (
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        <span>{review.user.location}</span>
-                      </div>
+                    {review.isVerifiedPurchase && (
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                        Verified Purchase
+                      </span>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
@@ -246,23 +321,53 @@ export function ProductReviews({ productId, reviews = [], averageRating = 0, tot
                   </div>
                 </div>
 
-                {/* Review Text */}
-                <p className="text-gray-700 mb-4 leading-relaxed">{review.review}</p>
+                {/* Review Title */}
+                <h5 className="font-semibold text-gray-900 mb-2">{review.title}</h5>
 
-                {/* Helpful Button */}
+                {/* Review Text */}
+                <p className="text-gray-700 mb-4 leading-relaxed">{review.comment}</p>
+
+                {/* Review Images */}
+                {review.images && review.images.length > 0 && (
+                  <div className="flex gap-2 mb-4">
+                    {review.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Review image ${index + 1}`}
+                        className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Admin Response */}
+                {review.adminResponse && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h6 className="font-semibold text-blue-900 mb-2">Admin Response</h6>
+                    <p className="text-blue-800 text-sm">{review.adminResponse.text}</p>
+                    <p className="text-blue-600 text-xs mt-2">
+                      {formatDate(review.adminResponse.respondedAt)}
+                    </p>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
                 <div className="flex items-center gap-4">
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => handleMarkHelpful(review._id)}
                     className="flex items-center gap-2 text-gray-600 hover:text-blue-600"
                   >
                     <ThumbsUp className="w-4 h-4" />
-                    Helpful ({review.helpful})
+                    Helpful ({review.helpfulVotes})
                   </Button>
                   
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => handleReportReview(review._id, 'inappropriate')}
                     className="text-gray-500 hover:text-red-600 text-sm"
                   >
                     <Flag className="w-4 h-4 mr-1" />

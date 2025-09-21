@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useToastContext } from "@/components/ui/toast"
-import { usersApi, type User, type Address } from "@/lib/api"
+import { usersApi, type User, type Address, tokenManager } from "@/lib/api"
 import { User as UserIcon, Mail, Phone, MapPin, Calendar, Edit, Plus, Trash2 } from "lucide-react"
 
 export default function ProfilePage() {
@@ -50,7 +50,13 @@ export default function ProfilePage() {
   const fetchProfile = async () => {
     try {
       setIsLoading(true)
-      const response = await usersApi.getProfile(user!.email)
+      const token = tokenManager.getToken()
+      if (!token) {
+        error("Error", "Authentication token not found. Please log in again.")
+        return
+      }
+      
+      const response = await usersApi.getProfile(token)
       if (response.status === 'success' && response.data) {
         setProfile(response.data.user)
         setAddresses(response.data.user.addresses || [])
@@ -68,7 +74,13 @@ export default function ProfilePage() {
 
   const handleUpdateProfile = async () => {
     try {
-      const response = await usersApi.updateProfile(user!.email, formData)
+      const token = tokenManager.getToken()
+      if (!token) {
+        error("Error", "Authentication token not found. Please log in again.")
+        return
+      }
+      
+      const response = await usersApi.updateProfile(token, formData)
       if (response.status === 'success' && response.data) {
         setProfile(response.data.user)
         setIsEditing(false)
@@ -83,7 +95,13 @@ export default function ProfilePage() {
 
   const handleAddAddress = async () => {
     try {
-      const response = await usersApi.addAddress(user!.email, addressForm)
+      const token = tokenManager.getToken()
+      if (!token) {
+        error("Error", "Authentication token not found. Please log in again.")
+        return
+      }
+      
+      const response = await usersApi.addAddress(token, addressForm)
       if (response.status === 'success' && response.data) {
         setAddresses(response.data.addresses)
         setIsAddingAddress(false)
@@ -107,7 +125,13 @@ export default function ProfilePage() {
 
   const handleUpdateAddress = async (addressId: string) => {
     try {
-      const response = await usersApi.updateAddress(user!.email, addressId, addressForm)
+      const token = tokenManager.getToken()
+      if (!token) {
+        error("Error", "Authentication token not found. Please log in again.")
+        return
+      }
+      
+      const response = await usersApi.updateAddress(token, addressId, addressForm)
       if (response.status === 'success' && response.data) {
         setAddresses(response.data.addresses)
         setEditingAddressId(null)
@@ -131,7 +155,13 @@ export default function ProfilePage() {
 
   const handleDeleteAddress = async (addressId: string) => {
     try {
-      const response = await usersApi.deleteAddress(user!.email, addressId)
+      const token = tokenManager.getToken()
+      if (!token) {
+        error("Error", "Authentication token not found. Please log in again.")
+        return
+      }
+      
+      const response = await usersApi.deleteAddress(token, addressId)
       if (response.status === 'success' && response.data) {
         setAddresses(response.data.addresses)
         success("Success", "Address deleted successfully")
@@ -145,7 +175,13 @@ export default function ProfilePage() {
 
   const handleSetDefaultAddress = async (addressId: string) => {
     try {
-      const response = await usersApi.setDefaultAddress(user!.email, addressId)
+      const token = tokenManager.getToken()
+      if (!token) {
+        error("Error", "Authentication token not found. Please log in again.")
+        return
+      }
+      
+      const response = await usersApi.setDefaultAddress(token, addressId)
       if (response.status === 'success' && response.data) {
         setAddresses(response.data.addresses)
         success("Success", "Default address updated")
