@@ -1,0 +1,243 @@
+/* components/loading.module.css */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #f5f1e8; /* Matching your page background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.2s ease-out;
+}
+
+.overlay.fadeOut {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+  z-index: 3;
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+/* Primary rotating ring */
+.ring {
+  width: 140px;
+  height: 140px;
+  border: 2px solid transparent;
+  border-top: 2px solid #000000;
+  border-right: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Secondary rotating ring */
+.ring2 {
+  width: 120px;
+  height: 120px;
+  border: 1px solid transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  animation: spinReverse 1.8s linear infinite;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+}
+
+/* Loading text */
+.text {
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 14px;
+  color: #8B5A3C; /* Warm brown to match your aesthetic */
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: pulse 1.5s ease-in-out infinite;
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+/* Animations */
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+@keyframes spinReverse {
+  0% { 
+    transform: rotate(360deg); 
+  }
+  100% { 
+    transform: rotate(0deg); 
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.6; 
+    transform: translateX(-50%) scale(1);
+  }
+  50% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .logo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .ring {
+    width: 120px;
+    height: 120px;
+  }
+
+  .ring2 {
+    width: 100px;
+    height: 100px;
+    top: 10px;
+    left: 10px;
+  }
+
+  .text {
+    font-size: 12px;
+    bottom: -40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logo {
+    width: 70px;
+    height: 70px;
+  }
+
+  .ring {
+    width: 100px;
+    height: 100px;
+    border-width: 2px;
+  }
+
+  .ring2 {
+    width: 85px;
+    height: 85px;
+    top: 7.5px;
+    left: 7.5px;
+    border-width: 1px;
+  }
+
+  .text {
+    font-size: 11px;
+    bottom: -35px;
+    letter-spacing: 1px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .overlay {
+    background: #1a1a1a;
+  }
+
+  .text {
+    color: #cbd5e0;
+  }
+
+  .ring {
+    border-top-color: #ffffff;
+    border-right-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .ring2 {
+    border-bottom-color: rgba(255, 255, 255, 0.4);
+    border-left-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .ring,
+  .ring2 {
+    animation: none;
+  }
+
+  .text {
+    animation: none;
+    opacity: 0.8;
+  }
+
+  .logo {
+    transition: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .ring {
+    border-top-color: #000000;
+    border-right-color: #000000;
+  }
+
+  .ring2 {
+    border-bottom-color: #000000;
+    border-left-color: #000000;
+  }
+
+  .text {
+    color: #000000;
+    font-weight: 600;
+  }
+}

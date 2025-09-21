@@ -1,0 +1,27 @@
+.circular-gallery {
+  width: 100vw;
+  height: 600px;
+  position: relative;
+  overflow: hidden;
+  background: white;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+@media (max-width: 768px) {
+  .circular-gallery {
+    height: 400px;
+  }
+}
+
+.circular-gallery canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
