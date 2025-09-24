@@ -251,7 +251,7 @@ export function AttractiveProductSlider({
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+    <section className="py-12 bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
@@ -261,34 +261,34 @@ export function AttractiveProductSlider({
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <Sparkles className="w-5 h-5 fill-current animate-pulse" />
-            <TrendingUp className="w-5 h-5" />
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 px-4 py-2 rounded-full text-xs font-semibold mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <Sparkles className="w-4 h-4 fill-current animate-pulse" />
+            <TrendingUp className="w-4 h-4" />
             {badge}
           </div>
           
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 leading-tight">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 leading-tight">
             {title}
           </h2>
           
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+          <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed mb-6">
             {subtitle}
           </p>
 
           {/* Stats */}
-          <div className="flex justify-center gap-12 mb-8">
+          <div className="flex justify-center gap-8 mb-6">
             <div className="text-center group">
-              <div className="text-4xl font-bold text-indigo-600 mb-2 group-hover:scale-110 transition-transform duration-300">{products.length}+</div>
-              <div className="text-gray-600 font-medium">Products</div>
+              <div className="text-2xl font-bold text-indigo-600 mb-1 group-hover:scale-110 transition-transform duration-300">{products.length}+</div>
+              <div className="text-sm text-gray-600 font-medium">Products</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:scale-110 transition-transform duration-300">4.8</div>
-              <div className="text-gray-600 font-medium">Avg Rating</div>
+              <div className="text-2xl font-bold text-purple-600 mb-1 group-hover:scale-110 transition-transform duration-300">4.8</div>
+              <div className="text-sm text-gray-600 font-medium">Avg Rating</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl font-bold text-pink-600 mb-2 group-hover:scale-110 transition-transform duration-300">100%</div>
-              <div className="text-gray-600 font-medium">Quality</div>
+              <div className="text-2xl font-bold text-pink-600 mb-1 group-hover:scale-110 transition-transform duration-300">100%</div>
+              <div className="text-sm text-gray-600 font-medium">Quality</div>
             </div>
           </div>
         </div>
@@ -311,7 +311,7 @@ export function AttractiveProductSlider({
             {visibleProducts.map((product, index) => (
               <div
                 key={product._id}
-                className={`group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 ease-out overflow-hidden border border-gray-100 ${
+                className={`group relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 ease-out overflow-hidden border border-gray-100 cursor-pointer ${
                   isTransitioning ? 'translate-y-8 opacity-70' : 'translate-y-0 opacity-100'
                 } ${hoveredCard === product._id ? 'scale-105 z-10' : 'scale-100'}`}
                 style={{ 
@@ -320,9 +320,10 @@ export function AttractiveProductSlider({
                 }}
                 onMouseEnter={() => setHoveredCard(product._id)}
                 onMouseLeave={() => setHoveredCard(null)}
+                onClick={() => router.push(`/products/${product._id}`)}
               >
                 {/* Product Image Container */}
-                <div className="relative h-72 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                <div className="relative h-56 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
                   <Image
                     src={product.images?.[0] || '/placeholder.jpg'}
                     alt={product.name}
@@ -389,7 +390,7 @@ export function AttractiveProductSlider({
                 </div>
 
                 {/* Product Info */}
-                <div className="p-6">
+                <div className="p-4">
                   {/* Category */}
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xs font-medium text-indigo-600 uppercase tracking-wide">
@@ -398,17 +399,17 @@ export function AttractiveProductSlider({
                   </div>
 
                   {/* Product Name */}
-                  <h3 className="font-bold text-gray-900 text-lg mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors duration-300 leading-tight">
+                  <h3 className="font-bold text-gray-900 text-base mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors duration-300 leading-tight">
                     {product.name}
                   </h3>
                   
                   {/* Rating */}
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-2">
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 transition-all duration-300 ${
+                          className={`w-3 h-3 transition-all duration-300 ${
                             i < Math.floor(product.rating || 4.5)
                               ? 'text-yellow-400 fill-current'
                               : 'text-gray-300'
@@ -416,7 +417,7 @@ export function AttractiveProductSlider({
                         />
                       ))}
                     </div>
-                    <span className="text-sm font-bold text-gray-700">
+                    <span className="text-xs font-bold text-gray-700">
                       {product.rating?.toFixed(1) || '4.5'}
                     </span>
                     <span className="text-xs text-gray-500">
@@ -425,16 +426,16 @@ export function AttractiveProductSlider({
                   </div>
 
                   {/* Price */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-2xl font-bold text-gray-900">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg font-bold text-gray-900">
                       ${product.price.toFixed(2)}
                     </span>
                     {product.originalPrice && product.originalPrice > product.price && (
                       <>
-                        <span className="text-lg text-gray-400 line-through">
+                        <span className="text-sm text-gray-400 line-through">
                           ${product.originalPrice.toFixed(2)}
                         </span>
-                        <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-bold">
+                        <span className="bg-red-100 text-red-800 px-1.5 py-0.5 rounded-full text-xs font-bold">
                           Save ${(product.originalPrice - product.price).toFixed(2)}
                         </span>
                       </>
@@ -504,15 +505,15 @@ export function AttractiveProductSlider({
         )}
 
         {/* View All Button */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-8">
           <Button 
             onClick={() => router.push('/products')}
             variant="outline" 
-            size="lg"
-            className="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-indigo-300 text-gray-700 hover:text-indigo-600 font-bold px-8 py-3 rounded-2xl transition-all duration-500 hover:scale-105 shadow-xl"
+            size="md"
+            className="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-indigo-300 text-gray-700 hover:text-indigo-600 font-bold px-6 py-2.5 rounded-lg transition-all duration-500 hover:scale-105 shadow-lg"
           >
             View All Products
-            <ChevronRight className="w-5 h-5 ml-2" />
+            <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </div>

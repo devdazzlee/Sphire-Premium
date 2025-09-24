@@ -539,7 +539,13 @@ export function AnimatedHeader() {
                   <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-4 text-center shadow-lg">
                     <h3 className="text-white font-bold text-base mb-2">Special Offer</h3>
                     <p className="text-blue-100 text-sm mb-3">Get 20% off your first order</p>
-                    <button className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-all duration-200 w-full shadow-md hover:shadow-lg">
+                    <button 
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                        router.push('/products?discount=20off')
+                      }}
+                      className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-all duration-200 w-full shadow-md hover:shadow-lg"
+                    >
                       Claim Now
                     </button>
                   </div>

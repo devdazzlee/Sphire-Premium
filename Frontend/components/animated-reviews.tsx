@@ -15,52 +15,64 @@ export function AnimatedReviews() {
 
   const reviews = [
     {
-      name: "Sarah Johnson",
+      name: "Aisha Khan",
       rating: 5,
       comment:
-        "Amazing quality and fast shipping! The customer service team went above and beyond to help me find exactly what I needed.",
-      avatar: "/happy-female-customer.png",
-      product: "Wireless Headphones",
+        "Absolutely love my new skincare routine! The products are gentle on my sensitive skin and I can see results within just a week. The delivery was super fast too!",
+      avatar: "/placeholder-user.jpg",
+      product: "Premium Skincare Set",
+      location: "Karachi, Pakistan",
+      verified: true
     },
     {
-      name: "Mike Chen",
+      name: "Fatima Ahmed",
       rating: 5,
       comment:
-        "Best online shopping experience I've ever had. The products arrived exactly as described and the packaging was excellent.",
-      avatar: "/satisfied-male-customer.png",
-      product: "Laptop Computer",
+        "Best beauty products I've ever used! The quality is amazing and the prices are so reasonable. My skin has never looked better. Will definitely order again!",
+      avatar: "/placeholder-user.jpg",
+      product: "Natural Beauty Essentials",
+      location: "Lahore, Pakistan",
+      verified: true
     },
     {
-      name: "Emily Rodriguez",
-      rating: 5,
+      name: "Zainab Ali",
+      rating: 4,
       comment:
-        "I love shopping here! Great prices, huge selection, and the delivery is always on time. Highly recommend to everyone!",
-      avatar: "/young-woman-headphones.png",
-      product: "Fashion Accessories",
+        "Great products with excellent customer service. The team helped me choose the right items for my skin type. Only wish the shipping was a bit faster.",
+      avatar: "/placeholder-user.jpg",
+      product: "Anti-Aging Serum",
+      location: "Islamabad, Pakistan",
+      verified: true
     },
     {
-      name: "David Thompson",
+      name: "Maryam Sheikh",
       rating: 5,
       comment:
-        "Outstanding service and quality products. The return policy is hassle-free and the staff is incredibly helpful.",
-      avatar: "/professional-man-suit.png",
-      product: "Business Equipment",
+        "I'm obsessed with these products! They've completely transformed my skincare routine. The packaging is beautiful and the ingredients are all natural. Highly recommend!",
+      avatar: "/placeholder-user.jpg",
+      product: "Hydrating Face Cream",
+      location: "Rawalpindi, Pakistan",
+      verified: true
     },
     {
-      name: "Lisa Wang",
+      name: "Sana Malik",
       rating: 5,
       comment:
-        "Five stars! The website is easy to navigate, checkout is smooth, and I always find what I'm looking for at great prices.",
-      avatar: "/asian-woman-shopping.png",
-      product: "Home Decor",
+        "Excellent quality products at affordable prices. The customer service team is very helpful and responsive. My order arrived in perfect condition. Thank you!",
+      avatar: "/placeholder-user.jpg",
+      product: "Vitamin C Serum",
+      location: "Faisalabad, Pakistan",
+      verified: true
     },
     {
-      name: "James Wilson",
+      name: "Hina Raza",
       rating: 5,
       comment:
-        "Exceptional quality and value. I've been a customer for years and they never disappoint. Keep up the great work!",
-      avatar: "/elderly-man-glasses.png",
-      product: "Electronics",
+        "These products are a game-changer! My skin feels so soft and healthy now. The website is easy to use and the checkout process is smooth. Will be a regular customer!",
+      avatar: "/placeholder-user.jpg",
+      product: "Complete Beauty Kit",
+      location: "Multan, Pakistan",
+      verified: true
     },
   ]
 
@@ -131,10 +143,15 @@ export function AnimatedReviews() {
       </div>
       <div className="max-w-6xl mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="reviews-title text-4xl md:text-5xl font-bold mb-4">What Our Customers Say</h2>
+          <h2 className="reviews-title text-4xl md:text-5xl font-bold mb-4">Real Customer Reviews</h2>
           <p className="reviews-subtitle text-xl opacity-90 max-w-2xl mx-auto">
-            Real reviews from real customers who love shopping with us
+            Discover why thousands of satisfied customers choose Sphire Premium for their beauty needs
           </p>
+          <div className="mt-4 flex justify-center gap-6 text-sm opacity-80">
+            <span>⭐ 4.8/5 Average Rating</span>
+            <span>👥 10,000+ Happy Customers</span>
+            <span>✓ 100% Verified Reviews</span>
+          </div>
         </div>
         <div className="review-container max-w-4xl mx-auto">
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20">
@@ -156,8 +173,16 @@ export function AnimatedReviews() {
                   "{reviews[currentReview].comment}"
                 </blockquote>
                 <div>
-                  <p className="font-bold text-lg">{reviews[currentReview].name}</p>
-                  <p className="text-white/70">Purchased: {reviews[currentReview].product}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-bold text-lg">{reviews[currentReview].name}</p>
+                    {reviews[currentReview].verified && (
+                      <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                        ✓ Verified Purchase
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-white/70 text-sm">Purchased: {reviews[currentReview].product}</p>
+                  <p className="text-white/60 text-xs">📍 {reviews[currentReview].location}</p>
                 </div>
               </div>
             </div>

@@ -306,27 +306,27 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             {/* Step 1: Shipping Address */}
             {currentStep === 1 && (
               <Card className="border-0 shadow-xl">
                 <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
-                  <CardTitle className="flex items-center text-2xl">
-                    <MapPin className="w-6 h-6 mr-3 text-blue-600" />
+                  <CardTitle className="flex items-center text-lg md:text-xl">
+                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
                     Shipping Address
                   </CardTitle>
-                  <CardDescription>Select or add a shipping address</CardDescription>
+                  <CardDescription className="text-sm">Select or add a shipping address</CardDescription>
                 </CardHeader>
-                <CardContent className="p-8">
+                <CardContent className="p-4 md:p-6">
                   {addresses.length > 0 && (
                     <div className="space-y-4 mb-8">
                       <h4 className="font-semibold text-gray-900">Select Address</h4>
                       {addresses.map((address) => (
                         <div
                           key={address._id}
-                          className={`p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
+                          className={`p-4 md:p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
                             selectedAddress?._id === address._id
                               ? 'border-blue-500 bg-blue-50 shadow-lg'
                               : 'border-gray-200 hover:border-gray-300'
@@ -376,7 +376,7 @@ export default function CheckoutPage() {
                     </div>
 
                     {isAddingAddress && (
-                      <div className="bg-gray-50 p-6 rounded-xl space-y-4">
+                      <div className="bg-gray-50 p-4 md:p-6 rounded-xl space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="addressType">Address Type</Label>
@@ -571,16 +571,16 @@ export default function CheckoutPage() {
             <div className="space-y-6">
             <Card className="border-0 shadow-xl sticky top-8">
               <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
-                <CardTitle className="flex items-center">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
+                <CardTitle className="flex items-center text-base md:text-lg">
+                  <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   Order Summary
                 </CardTitle>
                 </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="space-y-4">
                     {items.map((item) => (
-                    <div key={item.product._id} className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+                    <div key={item.product._id} className="flex items-center space-x-2 md:space-x-3">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         <img
                           src={item.product.images[0] || '/placeholder.jpg'}
                           alt={item.product.name}
@@ -588,10 +588,10 @@ export default function CheckoutPage() {
                         />
                         </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{item.product.name}</p>
+                        <p className="text-xs md:text-sm font-medium text-gray-900 truncate">{item.product.name}</p>
                         <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                       </div>
-                      <p className="text-sm font-semibold text-gray-900">PKR {(item.product.price || 0).toFixed(2)}</p>
+                      <p className="text-xs md:text-sm font-semibold text-gray-900">PKR {(item.product.price || 0).toFixed(2)}</p>
                       </div>
                     ))}
                   </div>

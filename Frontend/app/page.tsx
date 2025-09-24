@@ -15,6 +15,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-[#f5f1e8]">
       <AnimatedHeader />
       <ModernHeroBanner />
+      <CircularGallery />
       <AttractiveProductSlider 
         title="Trending Products"
         subtitle="Discover our most popular and trending products that everyone is loving right now. Handpicked for their exceptional quality and customer satisfaction."
@@ -34,7 +35,7 @@ export default function HomePage() {
       />
       <CircularGallery />
       <AnimatedCustomerBenefits />
-      <AnimatedReviews />
+      {/* <AnimatedReviews /> */}
       <Footer />
     </main>
   )

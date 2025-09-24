@@ -114,7 +114,7 @@ export function ModernHeroBanner() {
   const currentItem = promoItems[currentIndex]
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
+    <section className="relative h-[80vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -122,34 +122,34 @@ export function ModernHeroBanner() {
         }}></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-2 gap-8 items-center h-full">
           {/* Content Side */}
-          <div className={`space-y-8 transition-all duration-700 ease-out ${
+          <div className={`space-y-4 transition-all duration-700 ease-out ${
             isTransitioning ? 'opacity-0 translate-x-8' : 'opacity-100 translate-x-0'
           }`}>
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium">
-              <Sparkles className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium">
+              <Sparkles className="w-3 h-3" />
               {currentItem.badge}
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl lg:text-7xl font-bold text-white leading-tight">
+            <h1 className="text-3xl lg:text-5xl font-bold text-white leading-tight">
               {currentItem.title}
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl lg:text-2xl text-gray-300 leading-relaxed max-w-2xl">
+            <p className="text-base lg:text-lg text-gray-300 leading-relaxed max-w-xl">
               {currentItem.subtitle}
             </p>
 
             {/* Features */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               {currentItem.features.map((feature, index) => (
                 <span
                   key={index}
-                  className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium"
+                  className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium"
                 >
                   {feature}
                 </span>
@@ -157,47 +157,47 @@ export function ModernHeroBanner() {
             </div>
 
             {/* Price & Discount */}
-            <div className="flex items-center gap-6">
-              <div className="text-4xl font-bold text-white">
+            <div className="flex items-center gap-4">
+              <div className="text-2xl font-bold text-white">
                 {currentItem.discount}
               </div>
-              <div className="text-lg text-gray-400">
+              <div className="text-sm text-gray-400">
                 Limited Time Offer
               </div>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleShopNow}
-                size="lg"
-                className="bg-white text-black hover:bg-gray-100 font-semibold py-4 px-8 text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl"
+                size="md"
+                className="bg-white text-black hover:bg-gray-100 font-semibold py-2.5 px-6 text-sm rounded-lg transition-all duration-300 hover:scale-105 shadow-lg"
               >
                 Shop Collection
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button
                 variant="outline"
-                size="lg"
-                className="bg-white/20 backdrop-blur-sm border-white text-white hover:bg-white/30 font-semibold py-4 px-8 text-lg rounded-xl transition-all duration-300 hover:scale-105"
+                size="md"
+                className="bg-white/20 backdrop-blur-sm border-white text-white hover:bg-white/30 font-semibold py-2.5 px-6 text-sm rounded-lg transition-all duration-300 hover:scale-105"
               >
                 Learn More
               </Button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/20">
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/20">
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">50K+</div>
-                <div className="text-gray-400">Happy Customers</div>
+                <div className="text-xl font-bold text-white">50K+</div>
+                <div className="text-xs text-gray-400">Happy Customers</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">4.9</div>
-                <div className="text-gray-400">Average Rating</div>
+                <div className="text-xl font-bold text-white">4.9</div>
+                <div className="text-xs text-gray-400">Average Rating</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">100%</div>
-                <div className="text-gray-400">Natural</div>
+                <div className="text-xl font-bold text-white">100%</div>
+                <div className="text-xs text-gray-400">Natural</div>
               </div>
             </div>
           </div>
@@ -208,7 +208,7 @@ export function ModernHeroBanner() {
               isTransitioning ? 'opacity-0 scale-95 rotate-2' : 'opacity-100 scale-100 rotate-0'
             }`}>
               {/* Main Image Container */}
-              <div className="relative w-full h-[600px] lg:h-[700px] rounded-3xl overflow-hidden shadow-2xl">
+              <div className="relative w-full h-[400px] lg:h-[450px] rounded-2xl overflow-hidden shadow-xl">
                 <Image
                   src={currentItem.image}
                   alt={currentItem.title}
@@ -261,7 +261,7 @@ export function ModernHeroBanner() {
         </div>
 
         {/* Dots Indicator */}
-        <div className="flex justify-center gap-3 mt-16">
+        <div className="flex justify-center gap-3 mt-8">
           {promoItems.map((_, index) => (
             <button
               key={index}

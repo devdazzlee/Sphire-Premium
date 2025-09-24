@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { AnimatedHeader } from "@/components/animated-header"
 import { Footer } from "@/components/footer"
 import { ProductCard } from "@/components/product-card"
@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { Star, Heart, Share2, ShoppingCart, Plus, Minus, Truck, Shield, RotateCcw } from "lucide-react"
+import { Star, Heart, Share2, ShoppingCart, Plus, Minus, Truck, Shield, RotateCcw, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { productsApi } from "@/lib/api"
 import { useCart } from "@/contexts/cart-context"
+import { useToastContext } from "@/components/ui/toast"
 import type { Product } from "@/lib/api"
 import Link from "next/link"
 import { ReviewForm } from "@/components/review-form"
@@ -20,14 +21,18 @@ import { StarRating } from "@/components/star-rating"
 
 export default function ProductDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const productId = params.id as string
   const { addItemWithQuantity } = useCart()
+  const { success, error } = useToastContext()
 
   const [product, setProduct] = useState<Product | null>(null)
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  const [modalImageIndex, setModalImageIndex] = useState(0)
 
   useEffect(() => {
     if (productId) {
@@ -54,19 +59,87 @@ export default function ProductDetailPage() {
 
     try {
       const result = await addItemWithQuantity(product, quantity)
-      if (!result.success) {
-        // Handle error - you might want to show a toast notification
-        console.error('Failed to add to cart:', result.message)
+      if (result.success) {
+        success("Added to Cart", `${product.name} has been added to your cart`)
+      } else {
+        error("Failed to add to cart", result.message || "Please try again")
       }
     } catch (error) {
       console.error('Error adding to cart:', error)
+      error("Failed to add to cart", "Please try again")
     } finally {
       setIsAddingToCart(false)
     }
   }
 
+  const handleBuyNow = async () => {
+    if (!product) return
+
+    try {
+      const result = await addItemWithQuantity(product, quantity)
+      if (result.success) {
+        router.push('/checkout')
+      } else {
+        error("Failed to add to cart", result.message || "Please try again")
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      error("Failed to add to cart", "Please try again")
+    }
+  }
+
+  const handleWishlist = () => {
+    if (!product) return
+    success("Added to Wishlist", `${product.name} has been added to your wishlist`)
+  }
+
+  const handleShare = async () => {
+    if (!product) return
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: product.name,
+          text: product.description,
+          url: window.location.href,
+        })
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href)
+        success("Link Copied", "Product link has been copied to clipboard")
+      }
+    } catch (error) {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href)
+        success("Link Copied", "Product link has been copied to clipboard")
+      } catch (clipboardError) {
+        error("Share Failed", "Unable to share product")
+      }
+    }
+  }
+
   const handleQuantityChange = (change: number) => {
     setQuantity(Math.max(1, quantity + change))
+  }
+
+  const openImageModal = (index: number) => {
+    setModalImageIndex(index)
+    setIsImageModalOpen(true)
+  }
+
+  const closeImageModal = () => {
+    setIsImageModalOpen(false)
+  }
+
+  const nextModalImage = () => {
+    if (!product) return
+    setModalImageIndex((modalImageIndex + 1) % product.images.length)
+  }
+
+  const prevModalImage = () => {
+    if (!product) return
+    setModalImageIndex((modalImageIndex - 1 + product.images.length) % product.images.length)
   }
 
   if (!product) {
@@ -113,11 +186,14 @@ export default function ProductDetailPage() {
           {/* Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="aspect-square bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div 
+              className="aspect-square bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => openImageModal(selectedImageIndex)}
+            >
               <img
                 src={product.images[selectedImageIndex] || "/placeholder.svg?height=600&width=600&query=beauty product"}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
 
@@ -239,11 +315,21 @@ export default function ProductDetailPage() {
                   )}
                 </Button>
 
-                <Button variant="outline" size="lg" className="px-4 bg-transparent">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="px-4 bg-transparent"
+                  onClick={handleWishlist}
+                >
                   <Heart className="w-5 h-5" />
                 </Button>
 
-                <Button variant="outline" size="lg" className="px-4 bg-transparent">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="px-4 bg-transparent"
+                  onClick={handleShare}
+                >
                   <Share2 className="w-5 h-5" />
                 </Button>
               </div>
@@ -251,6 +337,7 @@ export default function ProductDetailPage() {
               <Button
                 variant="outline"
                 className="w-full py-3 text-lg border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white bg-transparent"
+                onClick={handleBuyNow}
               >
                 Buy Now
               </Button>
@@ -362,6 +449,53 @@ export default function ProductDetailPage() {
           </div>
         )}
       </main>
+
+      {/* Image Modal */}
+      {isImageModalOpen && product && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+          <div className="relative max-w-4xl max-h-full">
+            {/* Close Button */}
+            <button
+              onClick={closeImageModal}
+              className="absolute top-4 right-4 z-10 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Navigation Buttons */}
+            {product.images.length > 1 && (
+              <>
+                <button
+                  onClick={prevModalImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={nextModalImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+
+            {/* Image */}
+            <img
+              src={product.images[modalImageIndex] || "/placeholder.svg"}
+              alt={product.name}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            />
+
+            {/* Image Counter */}
+            {product.images.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                {modalImageIndex + 1} / {product.images.length}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

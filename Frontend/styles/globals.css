@@ -86,5 +86,25 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-size: 0.8rem; /* Reduce base font size by 20% */
   }
+  
+  /* Reduce heading sizes by 20% */
+  h1 { font-size: 2.4rem; line-height: 2.4rem; } /* was 3rem */
+  h2 { font-size: 1.92rem; line-height: 2rem; } /* was 2.4rem */
+  h3 { font-size: 1.6rem; line-height: 1.76rem; } /* was 2rem */
+  h4 { font-size: 1.28rem; line-height: 1.44rem; } /* was 1.6rem */
+  h5 { font-size: 1.12rem; line-height: 1.28rem; } /* was 1.4rem */
+  h6 { font-size: 0.96rem; line-height: 1.12rem; } /* was 1.2rem */
+  
+  /* Reduce spacing by 20% */
+  .container { 
+    padding-left: 0.8rem; 
+    padding-right: 0.8rem; 
+  }
+  
+  /* Reduce button sizes */
+  .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+  .btn-md { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+  .btn-lg { padding: 0.8rem 1.6rem; font-size: 1rem; }
 }

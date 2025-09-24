@@ -171,7 +171,7 @@ export function ProductCard({ product }: ProductCardProps) {
       ref={cardRef}
       className="group cursor-pointer transition-all duration-300 bg-white border-0 shadow-md overflow-hidden"
     >
-      <Link href={`/products/${product._id}`}>
+      <Link href={`/products/${product._id}`} className="block">
         <div className="relative overflow-hidden">
           <div className="aspect-square relative bg-gray-50">
             <img
