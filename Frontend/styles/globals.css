@@ -107,4 +107,23 @@
   .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
   .btn-md { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
   .btn-lg { padding: 0.8rem 1.6rem; font-size: 1rem; }
+  
+  /* Hide scrollbar for horizontal gallery */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+    overflow: -moz-scrollbars-none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+  .scrollbar-hide::-webkit-scrollbar-track {
+    display: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar-thumb {
+    display: none;
+  }
 }
