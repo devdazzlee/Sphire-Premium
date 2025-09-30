@@ -1,5 +1,5 @@
-const productionApiUrl = 'http://localhost:5000/api'
-// const productionApiUrl = 'https://sphire-premium-aiam.vercel.app/api'
+// const productionApiUrl = 'http://localhost:5000/api'
+const productionApiUrl = 'https://sphire-premium-aiam.vercel.app/api'
 
 
 export const API_CONFIG = {

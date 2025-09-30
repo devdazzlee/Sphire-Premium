@@ -55,7 +55,9 @@ app.use(cors({
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
 // Static files
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
