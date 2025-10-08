@@ -1,4 +1,4 @@
-const defaultApiUrl = 'http://localhost:5000/api'
+// const productionApiUrl = 'http://localhost:5000/api'
 const productionApiUrl = 'https://sphire-premium-aiam.vercel.app/api'
 
 

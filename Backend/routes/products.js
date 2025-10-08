@@ -136,9 +136,53 @@ router.get('/featured', async (req, res) => {
 });
 
 // @route   GET /api/products/categories
-// @desc    Get all categories and subcategories
+// @desc    Get all categories from Category collection (not from products)
 // @access  Public
 router.get('/categories', async (req, res) => {
+  try {
+    // Import Category model (add at top if not already imported)
+    const Category = (await import('../models/Category.js')).default;
+    
+    const { page = 1, limit = 100 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Get active categories
+    const categories = await Category.find({ isActive: true })
+      .populate('parentCategory', 'name slug')
+      .sort({ sortOrder: 1, name: 1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalCategories = await Category.countDocuments({ isActive: true });
+    const totalPages = Math.ceil(totalCategories / parseInt(limit));
+
+    res.json({
+      status: 'success',
+      data: {
+        categories,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages,
+          totalCategories,
+          hasNextPage: parseInt(page) < totalPages,
+          hasPrevPage: parseInt(page) > 1,
+          limit: parseInt(limit)
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get categories error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
+  }
+});
+
+// @route   GET /api/products/categories-from-products
+// @desc    Get all categories and subcategories from products (legacy)
+// @access  Public
+router.get('/categories-from-products', async (req, res) => {
   try {
     const categories = await Product.aggregate([
       { $match: { isActive: true } },

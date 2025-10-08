@@ -20,7 +20,7 @@ export default function HomePage() {
         title="Trending Products"
         subtitle="Discover our most popular and trending products that everyone is loving right now. Handpicked for their exceptional quality and customer satisfaction."
         badge="🔥 Trending Now"
-        apiEndpoint="featured"
+        apiEndpoint="all"
         limit={8}
         autoPlay={true}
         autoPlaySpeed={4000}
@@ -30,7 +30,7 @@ export default function HomePage() {
         title="Customer Favorites"
         subtitle="Discover our most loved products that customers can't get enough of. Each item is carefully selected based on reviews, ratings, and sales performance."
         badge="Customer Favorites"
-        apiEndpoint="featured"
+        apiEndpoint="all"
         limit={6}
       />
       <CircularGallery />

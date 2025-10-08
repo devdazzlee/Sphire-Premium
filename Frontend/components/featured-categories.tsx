@@ -10,6 +10,7 @@ import { productsApi } from "@/lib/api"
 interface Category {
   id: number
   name: string
+  slug?: string
   description: string
   image: string
   productCount: number
@@ -79,8 +80,8 @@ export function FeaturedCategories() {
   }, [])
 
   const handleCategoryClick = (category: Category) => {
-    // Convert category name to URL-friendly format
-    const categorySlug = category.name.toLowerCase().replace(/\s+/g, '-')
+    // Use the slug from API, or fallback to converting name
+    const categorySlug = category.slug || category.name.toLowerCase().replace(/\s+/g, '-')
     router.push(`/products?category=${categorySlug}`)
   }
 
@@ -88,57 +89,50 @@ export function FeaturedCategories() {
     try {
       setIsLoading(true)
       
-      // First, get all products to analyze categories
-      const allProductsResponse = await productsApi.getAll({ limit: 100 })
-      console.log('All products response:', allProductsResponse)
+      // Get categories from the Category collection
+      const categoriesResponse = await productsApi.getCategories()
+      console.log('Categories response:', categoriesResponse)
       
-      if (allProductsResponse.status === 'success' && allProductsResponse.data?.products) {
-        const allProducts = allProductsResponse.data.products
+      if (categoriesResponse.status === 'success' && categoriesResponse.data?.categories) {
+        const apiCategories = categoriesResponse.data.categories
         
-        // Group products by category
-        const categoryGroups: { [key: string]: any[] } = {}
-        allProducts.forEach((product: any) => {
-          const category = product.category || 'general'
-          if (!categoryGroups[category]) {
-            categoryGroups[category] = []
-          }
-          categoryGroups[category].push(product)
-        })
-        
-        console.log('Category groups:', categoryGroups)
-        
-        // Create dynamic categories from real data
-        const dynamicCategories: Category[] = []
-        let categoryId = 1
-        
-        Object.entries(categoryGroups).forEach(([categoryKey, products]) => {
-          if (products.length > 0) {
-            const firstProduct = products[0]
-            const categoryName = categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1).replace('-', ' ')
-            
-            dynamicCategories.push({
-              id: categoryId++,
-              name: categoryName,
-              description: `Premium ${categoryName.toLowerCase()} products for your beauty needs`,
-              image: firstProduct.images?.[0] || "/luxury-beauty-products-arranged-elegantly-on-marbl.png",
-              productCount: products.length,
-              discount: "Up to 40% OFF",
-              badge: products.length > 10 ? "Most Popular" : products.length > 5 ? "Trending" : "New",
-              color: categoryId % 2 === 0 ? "blue" : "green",
-              gradient: categoryId % 2 === 0 ? "from-blue-500 to-cyan-500" : "from-green-500 to-emerald-500"
-            })
+        // Transform API categories to match frontend format
+        const dynamicCategories: Category[] = apiCategories.map((cat: any, index: number) => {
+          const gradients = [
+            "from-blue-500 to-cyan-500",
+            "from-green-500 to-emerald-500",
+            "from-purple-500 to-pink-500",
+            "from-pink-500 to-rose-500",
+            "from-orange-500 to-amber-500",
+            "from-indigo-500 to-blue-500"
+          ]
+          
+          const colors = ["blue", "green", "purple", "pink", "orange", "indigo"]
+          const badges = ["Most Popular", "Trending", "Premium", "New", "Best Seller", "Featured"]
+          
+          return {
+            id: index + 1,
+            name: cat.name,
+            slug: cat.slug,
+            description: cat.description || `Premium ${cat.name.toLowerCase()} products for your beauty needs`,
+            image: cat.image || "/luxury-beauty-products-arranged-elegantly-on-marbl.png",
+            productCount: cat.productCount || 0,
+            discount: "Up to 40% OFF",
+            badge: badges[index % badges.length],
+            color: colors[index % colors.length],
+            gradient: gradients[index % gradients.length]
           }
         })
         
-        // If we have categories, use them, otherwise fallback to static
+        // If we have categories, use them (limit to 4 for display)
         if (dynamicCategories.length > 0) {
-          setCategories(dynamicCategories.slice(0, 4)) // Limit to 4 categories
+          setCategories(dynamicCategories.slice(0, 4))
         } else {
           // Fallback to static categories if no dynamic data
           setCategories(categories)
         }
       } else {
-        console.error('Failed to fetch products:', allProductsResponse)
+        console.error('Failed to fetch categories:', categoriesResponse)
         setCategories(categories)
       }
     } catch (error) {
@@ -300,9 +294,9 @@ export function FeaturedCategories() {
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           <Button 
-            onClick={() => router.push('/products')}
+            onClick={() => router.push('/categories')}
             variant="outline" 
-            size="md"
+            size="lg"
             className="bg-white hover:bg-gray-50 border-2 border-purple-200 hover:border-purple-300 text-purple-700 hover:text-purple-800 font-bold px-6 py-2.5 rounded-lg transition-all duration-500 hover:scale-105 shadow-lg"
           >
             View All Categories

@@ -87,8 +87,8 @@ function ProductsPageContent() {
   const categoryOptions = [
     { value: "all", label: "All Products" },
     ...categories.map(cat => ({
-      value: cat.category,
-      label: cat.category.charAt(0).toUpperCase() + cat.category.slice(1)
+      value: cat.slug || cat.name?.toLowerCase().replace(/\s+/g, '-') || '',
+      label: cat.name || ''
     }))
   ]
 
