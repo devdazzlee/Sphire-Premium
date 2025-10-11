@@ -15,6 +15,7 @@ import cartRoutes from './routes/cart.js';
 import orderRoutes from './routes/orders.js';
 import reviewRoutes from './routes/reviews.js';
 import adminRoutes from './routes/admin.js';
+import newsletterRoutes from './routes/newsletter.js';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js';
@@ -45,7 +46,14 @@ app.use(cors({
     process.env.FRONTEND_URL || 'http://localhost:3000',
     process.env.DASHBOARD_URL || 'http://localhost:3001',
     'https://sphire-premium-frontend.vercel.app',
-    'https://sphire-premium.vercel.app'
+    'https://sphire-premium.vercel.app',
+    'http://localhost:3001/',
+    'http://localhost:3000',
+    'http://sphirepremium.com/',
+    'https://sphirepremium.com/',
+    'http://sphirepremium.com/' ,
+    'www.sphirepremium.com',
+    'https://www.sphirepremium.com',
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -78,6 +86,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // Error handling middleware
 app.use(notFound);
@@ -86,13 +95,11 @@ app.use(errorHandler);
 // Database connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('Database connection error:', error);
+    console.error('Error details:', error.message);
     process.exit(1);
   }
 };

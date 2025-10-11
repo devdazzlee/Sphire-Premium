@@ -9,6 +9,7 @@ interface StarRatingProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'
   interactive?: boolean
   showText?: boolean
+  reviewCount?: number
   onRatingChange?: (rating: number) => void
   className?: string
 }
@@ -19,6 +20,7 @@ export function StarRating({
   size = 'md', 
   interactive = false, 
   showText = false,
+  reviewCount = 0,
   onRatingChange,
   className = ""
 }: StarRatingProps) {
@@ -79,7 +81,7 @@ export function StarRating({
       
       {showText && (
         <span className="ml-2 text-sm font-medium text-gray-700">
-          {rating.toFixed(1)} ({maxRating})
+          {rating.toFixed(1)} {reviewCount > 0 && `(${reviewCount})`}
         </span>
       )}
     </div>
@@ -148,7 +150,7 @@ export function InteractiveStarRating({
         interactive={true}
         onRatingChange={handleRatingChange}
         size={size}
-        showText={true}
+        showText={false}
       />
     </div>
   )

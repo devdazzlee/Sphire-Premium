@@ -1,96 +1,109 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { toast } from 'sonner'
 
-export interface Product {
-  id: string
+export interface WishlistItem {
+  _id: string
   name: string
   price: number
   originalPrice?: number
   images: string[]
   category: string
-  description?: string
   inStock: boolean
-}
-
-export interface WishlistItem {
-  product: Product
-  addedAt: Date
+  rating: number
+  reviewCount: number
 }
 
 interface WishlistContextType {
-  wishlist: WishlistItem[]
-  addToWishlist: (product: Product) => void
+  items: WishlistItem[]
+  addToWishlist: (item: WishlistItem) => void
   removeFromWishlist: (productId: string) => void
   isInWishlist: (productId: string) => boolean
   clearWishlist: () => void
-  wishlistCount: number
+  itemCount: number
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([])
+  const [items, setItems] = useState<WishlistItem[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
+  // Load wishlist from localStorage on mount
   useEffect(() => {
-    const savedWishlist = localStorage.getItem('sphire-wishlist')
-    if (savedWishlist) {
-      try {
-        const parsed = JSON.parse(savedWishlist)
-        const wishlistWithDates = parsed.map((item: any) => ({
-          ...item,
-          addedAt: new Date(item.addedAt)
-        }))
-        setWishlist(wishlistWithDates)
-      } catch (error) {
-        console.error('Error loading wishlist:', error)
+    if (typeof window !== 'undefined') {
+      const savedWishlist = localStorage.getItem('wishlist')
+      if (savedWishlist) {
+        try {
+          setItems(JSON.parse(savedWishlist))
+        } catch (error) {
+          console.error('Error loading wishlist:', error)
+        }
       }
+      setIsLoaded(true)
     }
   }, [])
 
+  // Save wishlist to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('sphire-wishlist', JSON.stringify(wishlist))
-  }, [wishlist])
+    if (isLoaded && typeof window !== 'undefined') {
+      localStorage.setItem('wishlist', JSON.stringify(items))
+    }
+  }, [items, isLoaded])
 
-  const addToWishlist = useCallback((product: Product) => {
-    setWishlist(prev => {
-      const exists = prev.some(item => item.product.id === product.id)
+  const addToWishlist = (item: WishlistItem) => {
+    setItems((prevItems) => {
+      const exists = prevItems.find((i) => i._id === item._id)
       if (exists) {
-        return prev
+        toast.info('Already in wishlist', {
+          description: 'This item is already in your wishlist'
+        })
+        return prevItems
       }
-      
-      return [...prev, {
-        product,
-        addedAt: new Date()
-      }]
+      toast.success('Added to wishlist!', {
+        description: `${item.name} has been added to your wishlist`
+      })
+      return [...prevItems, item]
     })
-  }, [])
+  }
 
-  const removeFromWishlist = useCallback((productId: string) => {
-    setWishlist(prev => prev.filter(item => item.product.id !== productId))
-  }, [])
+  const removeFromWishlist = (productId: string) => {
+    setItems((prevItems) => {
+      const item = prevItems.find((i) => i._id === productId)
+      if (item) {
+        toast.success('Removed from wishlist', {
+          description: `${item.name} has been removed from your wishlist`
+        })
+      }
+      return prevItems.filter((i) => i._id !== productId)
+    })
+  }
 
-  const isInWishlist = useCallback((productId: string) => {
-    return wishlist.some(item => item.product.id === productId)
-  }, [wishlist])
+  const isInWishlist = (productId: string) => {
+    return items.some((item) => item._id === productId)
+  }
 
-  const clearWishlist = useCallback(() => {
-    setWishlist([])
-  }, [])
+  const clearWishlist = () => {
+    setItems([])
+    toast.success('Wishlist cleared', {
+      description: 'All items have been removed from your wishlist'
+    })
+  }
 
-  const wishlistCount = wishlist.length
-
-  const contextValue = useMemo(() => ({
-    wishlist,
-    addToWishlist,
-    removeFromWishlist,
-    isInWishlist,
-    clearWishlist,
-    wishlistCount
-  }), [wishlist, addToWishlist, removeFromWishlist, isInWishlist, clearWishlist, wishlistCount])
+  const itemCount = items.length
 
   return (
-    <WishlistContext.Provider value={contextValue}>
+    <WishlistContext.Provider
+      value={{
+        items,
+        addToWishlist,
+        removeFromWishlist,
+        isInWishlist,
+        clearWishlist,
+        itemCount,
+      }}
+    >
       {children}
     </WishlistContext.Provider>
   )

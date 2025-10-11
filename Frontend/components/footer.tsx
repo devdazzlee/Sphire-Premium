@@ -1,49 +1,52 @@
 "use client"
 
 import { useState } from "react"
-import { Facebook, Instagram, Twitter } from "lucide-react"
+import { Facebook, Instagram, Twitter, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-import { useToastContext } from "@/components/ui/toast"
+import { toast } from "sonner"
+import { newsletterApi } from "@/lib/api"
 
 export function Footer() {
   const [email, setEmail] = useState("")
   const [isSubscribing, setIsSubscribing] = useState(false)
-  const { success, error } = useToastContext()
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Validate email
     if (!email.trim()) {
-      error("Please enter a valid email address")
+      toast.error("Please enter your email address")
+      return
+    }
+
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address")
       return
     }
 
     setIsSubscribing(true)
     
     try {
-      // Simulate API call - replace with actual API endpoint
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email.trim() }),
-      })
+      const response = await newsletterApi.subscribe(email.trim(), 'footer')
 
-      if (response.ok) {
-        success("Successfully subscribed!", "Thank you for subscribing! You'll receive our latest updates.")
+      if (response.status === 'success') {
+        toast.success("Successfully subscribed!", {
+          description: response.message || "Thank you for subscribing! Check your email for confirmation."
+        })
         setEmail("")
       } else {
-        // Fallback success message for demo purposes
-        success("Successfully subscribed!", "Thank you for subscribing! You'll receive our latest updates.")
-        setEmail("")
+        toast.error("Subscription failed", {
+          description: response.message || "Failed to subscribe. Please try again."
+        })
       }
-    } catch (err) {
-      // Fallback success message for demo purposes
-      success("Successfully subscribed!", "Thank you for subscribing! You'll receive our latest updates.")
-      setEmail("")
+    } catch (err: any) {
+      console.error('Newsletter subscription error:', err)
+      toast.error("Something went wrong", {
+        description: "Failed to subscribe. Please try again later."
+      })
     } finally {
       setIsSubscribing(false)
     }
@@ -71,9 +74,9 @@ export function Footer() {
             <Button 
               type="submit" 
               disabled={isSubscribing}
-              className="rounded-r-full bg-gray-800 hover:bg-gray-700 px-6"
+              className="rounded-r-full bg-gray-800 hover:bg-gray-700 px-6 flex items-center gap-2"
             >
-              {isSubscribing ? "..." : "→"}
+              {isSubscribing ? "..." : <Send className="w-4 h-4 !text-white" />}
             </Button>
           </form>
         </div>

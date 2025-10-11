@@ -1,0 +1,53 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "Skincare",
+    "slug": "skincare",
+    "description": "Premium skincare products for all skin types. From cleansers to serums, we have everything you need for healthy, glowing skin.",
+    "image": "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400&h=300&fit=crop",
+    "parentCategory": null,
+    "subcategories": [],
+    "isActive": true,
+    "sortOrder": 1,
+    "metaTitle": "Premium Skincare Products | Sphire Premium",
+    "metaDescription": "Discover our premium skincare collection featuring cleansers, serums, moisturizers and more for all skin types.",
+    "metaKeywords": ["skincare", "beauty", "cosmetics", "skin care", "premium"],
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439012",
+    "name": "Makeup",
+    "slug": "makeup",
+    "description": "Professional makeup products for every occasion. High-quality cosmetics that enhance your natural beauty with long-lasting formulas.",
+    "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop",
+    "parentCategory": null,
+    "subcategories": [],
+    "isActive": true,
+    "sortOrder": 2,
+    "metaTitle": "Professional Makeup Products | Sphire Premium",
+    "metaDescription": "Explore our professional makeup collection including foundations, lipsticks, eyeshadows and more from top beauty brands.",
+    "metaKeywords": ["makeup", "cosmetics", "beauty", "professional", "foundation", "lipstick"],
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439013",
+    "name": "Hair Care",
+    "slug": "hair-care",
+    "description": "Luxurious hair care products for all hair types. From shampoos to treatments, achieve healthy, beautiful hair with our premium collection.",
+    "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop",
+    "parentCategory": null,
+    "subcategories": [],
+    "isActive": true,
+    "sortOrder": 3,
+    "metaTitle": "Premium Hair Care Products | Sphire Premium",
+    "metaDescription": "Transform your hair with our premium hair care collection including shampoos, conditioners, treatments and styling products.",
+    "metaKeywords": ["hair care", "shampoo", "conditioner", "hair treatment", "hair styling", "premium"],
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
+  }
+]
+
+
+

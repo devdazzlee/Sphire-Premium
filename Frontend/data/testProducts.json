@@ -1,0 +1,181 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439021",
+    "name": "Hydrating Vitamin C Serum",
+    "description": "Powerful vitamin C serum that brightens skin, reduces dark spots, and provides deep hydration. Perfect for all skin types, this lightweight serum absorbs quickly and leaves skin glowing.",
+    "price": 45.99,
+    "originalPrice": 59.99,
+    "images": [
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=600&h=600&fit=crop"
+    ],
+    "category": "skincare",
+    "subcategory": "serums",
+    "brand": "Sphire Premium",
+    "inStock": true,
+    "stockQuantity": 25,
+    "rating": 4.8,
+    "reviewCount": 156,
+    "features": [
+      "20% Vitamin C concentration",
+      "Hyaluronic acid for hydration",
+      "Vitamin E for antioxidant protection",
+      "Fragrance-free formula"
+    ],
+    "ingredients": [
+      "Ascorbic Acid (Vitamin C)",
+      "Hyaluronic Acid",
+      "Vitamin E",
+      "Green Tea Extract",
+      "Aloe Vera"
+    ],
+    "howToUse": "Apply 2-3 drops to clean skin in the morning before moisturizer. Use daily for best results. Follow with SPF protection.",
+    "skinType": ["all", "dry", "combination", "oily"],
+    "benefits": [
+      "Brightens complexion",
+      "Reduces dark spots",
+      "Boosts collagen production",
+      "Provides antioxidant protection"
+    ],
+    "tags": ["vitamin c", "serum", "brightening", "anti-aging", "hydration"],
+    "weight": 30,
+    "dimensions": {
+      "length": 15,
+      "width": 3,
+      "height": 15
+    },
+    "isActive": true,
+    "isFeatured": true,
+    "isNew": false,
+    "isOnSale": true,
+    "saleStartDate": "2024-01-01T00:00:00.000Z",
+    "saleEndDate": "2024-12-31T23:59:59.000Z",
+    "seoTitle": "Hydrating Vitamin C Serum | Sphire Premium",
+    "seoDescription": "Brighten your skin with our premium Vitamin C serum. Reduces dark spots, boosts collagen, and provides deep hydration for all skin types.",
+    "metaKeywords": ["vitamin c serum", "brightening serum", "anti-aging", "skincare", "hydration"],
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439022",
+    "name": "Luxury Matte Lipstick Set",
+    "description": "Premium matte lipstick set featuring 6 stunning shades. Long-lasting, highly pigmented formula that glides on smoothly and stays put all day without drying out your lips.",
+    "price": 89.99,
+    "originalPrice": 120.00,
+    "images": [
+      "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&h=600&fit=crop"
+    ],
+    "category": "makeup",
+    "subcategory": "lipstick",
+    "brand": "Sphire Premium",
+    "inStock": true,
+    "stockQuantity": 18,
+    "rating": 4.9,
+    "reviewCount": 89,
+    "features": [
+      "6 premium matte shades",
+      "Long-lasting formula (12+ hours)",
+      "Highly pigmented",
+      "Non-drying formula",
+      "Cruelty-free"
+    ],
+    "ingredients": [
+      "Dimethicone",
+      "Carnauba Wax",
+      "Vitamin E",
+      "Jojoba Oil",
+      "Natural Pigments"
+    ],
+    "howToUse": "Apply directly to lips or use a lip brush for precise application. Can be layered for more intensity. Remove with makeup remover.",
+    "skinType": ["all"],
+    "benefits": [
+      "Long-lasting wear",
+      "Smooth application",
+      "Rich pigmentation",
+      "Comfortable feel",
+      "Professional finish"
+    ],
+    "tags": ["lipstick", "matte", "long-lasting", "luxury", "set", "cruelty-free"],
+    "weight": 60,
+    "dimensions": {
+      "length": 20,
+      "width": 15,
+      "height": 8
+    },
+    "isActive": true,
+    "isFeatured": true,
+    "isNew": true,
+    "isOnSale": true,
+    "saleStartDate": "2024-01-01T00:00:00.000Z",
+    "saleEndDate": "2024-12-31T23:59:59.000Z",
+    "seoTitle": "Luxury Matte Lipstick Set | Sphire Premium",
+    "seoDescription": "Discover our luxury matte lipstick set with 6 stunning shades. Long-lasting, highly pigmented formula perfect for any occasion.",
+    "metaKeywords": ["lipstick set", "matte lipstick", "luxury makeup", "long-lasting", "cruelty-free"],
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439023",
+    "name": "Repairing Hair Mask",
+    "description": "Intensive repairing hair mask for damaged and dry hair. Enriched with keratin, argan oil, and silk proteins to restore hair health, add shine, and prevent breakage.",
+    "price": 34.99,
+    "originalPrice": 45.99,
+    "images": [
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=600&fit=crop"
+    ],
+    "category": "hair care",
+    "subcategory": "hair masks",
+    "brand": "Sphire Premium",
+    "inStock": true,
+    "stockQuantity": 32,
+    "rating": 4.7,
+    "reviewCount": 124,
+    "features": [
+      "Keratin-enriched formula",
+      "Argan oil for moisture",
+      "Silk proteins for strength",
+      "Sulfate-free",
+      "Suitable for all hair types"
+    ],
+    "ingredients": [
+      "Keratin",
+      "Argan Oil",
+      "Silk Proteins",
+      "Shea Butter",
+      "Coconut Oil",
+      "Vitamin E"
+    ],
+    "howToUse": "Apply to damp hair after shampooing. Leave on for 10-15 minutes. Rinse thoroughly with warm water. Use 1-2 times per week for best results.",
+    "skinType": ["all"],
+    "benefits": [
+      "Repairs damaged hair",
+      "Adds shine and smoothness",
+      "Prevents breakage",
+      "Deeply moisturizes",
+      "Improves hair texture"
+    ],
+    "tags": ["hair mask", "repairing", "keratin", "argan oil", "damaged hair", "moisturizing"],
+    "weight": 250,
+    "dimensions": {
+      "length": 12,
+      "width": 8,
+      "height": 12
+    },
+    "isActive": true,
+    "isFeatured": false,
+    "isNew": false,
+    "isOnSale": true,
+    "saleStartDate": "2024-01-01T00:00:00.000Z",
+    "saleEndDate": "2024-12-31T23:59:59.000Z",
+    "seoTitle": "Repairing Hair Mask | Sphire Premium",
+    "seoDescription": "Restore your hair's health with our intensive repairing hair mask. Enriched with keratin and argan oil for damaged and dry hair.",
+    "metaKeywords": ["hair mask", "repairing", "keratin", "argan oil", "damaged hair", "moisturizing"],
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
+  }
+]
+
+
+

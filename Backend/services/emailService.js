@@ -257,8 +257,159 @@ export const sendOrderStatusUpdateEmail = async (order, user, newStatus) => {
   }
 };
 
+// Newsletter welcome email template
+const newsletterWelcomeTemplate = (email) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>Welcome to Sphire Premium Newsletter</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; }
+            .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center; }
+            .header h1 { margin: 0; font-size: 28px; }
+            .content { padding: 40px 30px; }
+            .content h2 { color: #333; font-size: 22px; margin-bottom: 15px; }
+            .content p { margin-bottom: 15px; line-height: 1.8; }
+            .benefits { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            .benefits ul { margin: 10px 0; padding-left: 20px; }
+            .benefits li { margin: 8px 0; }
+            .cta-button { display: inline-block; padding: 15px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
+            .social-icons { margin: 20px 0; }
+            .social-icons a { display: inline-block; margin: 0 10px; color: #667eea; text-decoration: none; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎉 Welcome to Sphire Premium!</h1>
+                <p style="margin: 10px 0 0 0; font-size: 16px;">Thank you for subscribing to our newsletter</p>
+            </div>
+            
+            <div class="content">
+                <h2>Hello Beauty Enthusiast! 💄</h2>
+                
+                <p>We're thrilled to have you join our exclusive community! You've just taken the first step towards staying updated with the latest in premium beauty and skincare.</p>
+                
+                <div class="benefits">
+                    <h3 style="margin-top: 0;">What You'll Receive:</h3>
+                    <ul>
+                        <li>✨ Exclusive early access to new product launches</li>
+                        <li>💰 Special subscriber-only discounts and promotions</li>
+                        <li>📚 Expert beauty tips and skincare advice</li>
+                        <li>🎁 Birthday surprises and seasonal offers</li>
+                        <li>📦 First look at limited edition collections</li>
+                    </ul>
+                </div>
+
+                <p>As a welcome gift, use code <strong style="background: #fff3cd; padding: 5px 10px; border-radius: 3px;">WELCOME10</strong> for 10% off your first order!</p>
+
+                <div style="text-align: center;">
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/products" class="cta-button">Start Shopping</a>
+                </div>
+
+                <p style="margin-top: 30px;">Follow us on social media to stay connected:</p>
+                <div class="social-icons">
+                    <a href="#">Facebook</a> | 
+                    <a href="#">Instagram</a> | 
+                    <a href="#">Twitter</a>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p><strong>Sphire Premium</strong></p>
+                <p>Premium Beauty & Skincare</p>
+                <p style="margin-top: 15px; font-size: 12px;">
+                    Not interested anymore? <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/unsubscribe?email=${email}" style="color: #667eea;">Unsubscribe</a>
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+};
+
+// Newsletter broadcast template
+const newsletterBroadcastTemplate = (subject, content, htmlContent) => {
+  return htmlContent || `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>${subject}</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; }
+            .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; }
+            .content { padding: 40px 30px; }
+            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>${subject}</h1>
+            </div>
+            
+            <div class="content">
+                ${content}
+            </div>
+            
+            <div class="footer">
+                <p><strong>Sphire Premium</strong></p>
+                <p>Premium Beauty & Skincare</p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+};
+
+// Send newsletter welcome email
+export const sendNewsletterWelcome = async (email) => {
+  try {
+    const mailOptions = {
+      from: `Sphire Premium <${process.env.EMAIL_USER || 'ahmedrazagithub@gmail.com'}>`,
+      to: email,
+      subject: '🎉 Welcome to Sphire Premium Newsletter!',
+      html: newsletterWelcomeTemplate(email)
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log('Newsletter welcome email sent:', result.messageId);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('Error sending newsletter welcome email:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Send bulk newsletter to subscribers
+export const sendBulkNewsletter = async (emails, subject, content, htmlContent) => {
+  try {
+    const mailOptions = {
+      from: `Sphire Premium <${process.env.EMAIL_USER || 'ahmedrazagithub@gmail.com'}>`,
+      bcc: emails, // Use BCC to hide recipients from each other
+      subject: subject,
+      html: newsletterBroadcastTemplate(subject, content, htmlContent)
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log(`Bulk newsletter sent to ${emails.length} subscribers:`, result.messageId);
+    return { success: true, messageId: result.messageId, recipientCount: emails.length };
+  } catch (error) {
+    console.error('Error sending bulk newsletter:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 export default {
   sendOrderConfirmationEmail,
   sendAdminNotificationEmail,
-  sendOrderStatusUpdateEmail
+  sendOrderStatusUpdateEmail,
+  sendNewsletterWelcome,
+  sendBulkNewsletter
 };

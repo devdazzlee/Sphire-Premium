@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Star, ShoppingCart, Heart, Eye } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
+import { useWishlist } from "@/contexts/wishlist-context"
 import { useGSAP } from "@/hooks/use-gsap"
 import Link from "next/link"
 
@@ -18,10 +19,12 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart()
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
   const { ref, gsap } = useGSAP()
   const [isHovered, setIsHovered] = useState(false)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
+  const isWishlisted = isInWishlist(product._id)
 
   useEffect(() => {
     const card = cardRef.current
@@ -173,7 +176,7 @@ export function ProductCard({ product }: ProductCardProps) {
     >
       <Link href={`/products/${product._id}`} className="block">
         <div className="relative overflow-hidden">
-          <div className="aspect-square relative bg-gray-50">
+          <div className="aspect-[3/4] sm:aspect-square relative bg-gray-50">
             <img
               src={product.images[0] || "/placeholder.svg?height=300&width=300&query=beauty product"}
               alt={product.name}
@@ -190,13 +193,32 @@ export function ProductCard({ product }: ProductCardProps) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="quick-action w-10 h-10 rounded-full p-0 bg-white/90 hover:bg-white shadow-md opacity-0"
+                className={`quick-action w-10 h-10 rounded-full p-0 shadow-md opacity-0 transition-colors ${
+                  isWishlisted 
+                    ? "bg-red-500 hover:bg-red-600 text-white" 
+                    : "bg-white/90 hover:bg-white"
+                }`}
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
+                  if (isWishlisted) {
+                    removeFromWishlist(product._id)
+                  } else {
+                    addToWishlist({
+                      _id: product._id,
+                      name: product.name,
+                      price: product.price,
+                      originalPrice: product.originalPrice,
+                      images: product.images,
+                      category: product.category,
+                      inStock: product.inStock,
+                      rating: product.rating,
+                      reviewCount: product.reviewCount || 0
+                    })
+                  }
                 }}
               >
-                <Heart className="w-4 h-4" />
+                <Heart className={`w-4 h-4 ${isWishlisted ? "fill-current" : ""}`} />
               </Button>
               <Button
                 size="sm"
@@ -220,7 +242,7 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
 
-          <CardContent className="p-4">
+          <CardContent className="px-4 pt-3 pb-3">
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{product.category.replace("-", " ")}</p>
 
             <h3 className="font-medium text-gray-800 mb-2 line-clamp-2 group-hover:text-black transition-colors">
@@ -243,10 +265,10 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             </div>
 
-            <div className="flex items-center gap-2 mb-4">
-              <span className="price text-lg font-semibold text-gray-800">PKR {product.price.toFixed(2)}</span>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="price text-lg font-semibold text-gray-800">Rs {product.price.toFixed(2)}</span>
               {product.originalPrice && (
-                <span className="text-sm text-gray-500 line-through">PKR {product.originalPrice.toFixed(2)}</span>
+                <span className="text-sm text-gray-500 line-through">Rs {product.originalPrice.toFixed(2)}</span>
               )}
             </div>
 

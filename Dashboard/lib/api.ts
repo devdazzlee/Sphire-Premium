@@ -341,87 +341,6 @@ export interface ActivityLog {
   createdAt: string;
 }
 
-export interface Review {
-  _id: string;
-  user: string | User;
-  product: string | Product;
-  order?: string | Order;
-  rating: number;
-  title: string;
-  comment: string;
-  images: string[];
-  isVerifiedPurchase: boolean;
-  isApproved: boolean;
-  isActive: boolean;
-  helpfulVotes: number;
-  adminResponse?: {
-    text: string;
-    respondedBy: string;
-    respondedAt: string;
-  };
-  reportedBy: Array<{
-    user: string;
-    reason: string;
-    reportedAt: string;
-  }>;
-  moderationNotes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Location {
-  _id: string;
-  name: string;
-  type: 'warehouse' | 'store' | 'pickup_point' | 'shipping_zone';
-  code: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-    coordinates?: {
-      latitude: number;
-      longitude: number;
-    };
-  };
-  contact: {
-    phone?: string;
-    email?: string;
-  };
-  manager: {
-    name?: string;
-    phone?: string;
-    email?: string;
-  };
-  operatingHours: Record<string, {
-    open: string;
-    close: string;
-    isOpen: boolean;
-  }>;
-  capacity: {
-    storage?: number;
-    unit?: string;
-  };
-  services: string[];
-  deliveryZones: Array<{
-    name: string;
-    cities: string[];
-    deliveryTime: {
-      min: number;
-      max: number;
-    };
-    deliveryCost: number;
-    freeDeliveryThreshold: number;
-  }>;
-  isActive: boolean;
-  isDefault: boolean;
-  notes?: string;
-  lastInventoryUpdate: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface DashboardStats {
   users: {
     total: number;
@@ -835,51 +754,6 @@ export const adminApi = {
     return response.json();
   },
 
-  // Reviews Management APIs
-  getReviews: async (token: string, params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    rating?: number;
-    product?: string;
-    user?: string;
-  }): Promise<ApiResponse<{ reviews: Review[]; pagination: any }>> => {
-    const searchParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined) searchParams.append(key, value.toString());
-      });
-    }
-    
-    const response = await fetch(`${API_BASE_URL}/admin/reviews?${searchParams}`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    return response.json();
-  },
-
-  approveReview: async (token: string, reviewId: string): Promise<ApiResponse<{ review: Review }>> => {
-    const response = await fetch(`${API_BASE_URL}/admin/reviews/${reviewId}/approve`, {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    return response.json();
-  },
-
-  rejectReview: async (token: string, reviewId: string): Promise<ApiResponse<{ review: Review }>> => {
-    const response = await fetch(`${API_BASE_URL}/admin/reviews/${reviewId}/reject`, {
-      method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    return response.json();
-  },
-
-  deleteReview: async (token: string, reviewId: string): Promise<ApiResponse<void>> => {
-    const response = await fetch(`${API_BASE_URL}/admin/reviews/${reviewId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    return response.json();
-  },
 
   // Locations Management APIs
   getLocations: async (token: string, params?: {
@@ -991,6 +865,100 @@ export const adminApi = {
       headers: { 'Authorization': `Bearer ${token}` },
     });
     return response.json();
+  },
+
+  // Newsletter endpoints
+  getNewsletterSubscribers: async (
+    token: string,
+    params?: { page?: number; limit?: number; isActive?: boolean; search?: string }
+  ): Promise<ApiResponse<{ subscribers: any[]; pagination: any }>> => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', params.page.toString());
+      if (params?.limit) queryParams.append('limit', params.limit.toString());
+      if (params?.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
+      if (params?.search) queryParams.append('search', params.search);
+
+      const response = await fetch(`${API_BASE_URL}/newsletter/subscribers?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return {
+        status: 'error',
+        message: error.message || 'Failed to fetch newsletter subscribers',
+      };
+    }
+  },
+
+  getNewsletterStats: async (token: string): Promise<ApiResponse<any>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/newsletter/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return {
+        status: 'error',
+        message: error.message || 'Failed to fetch newsletter stats',
+      };
+    }
+  },
+
+  sendNewsletter: async (
+    token: string,
+    newsletterData: { subject: string; content: string; htmlContent?: string }
+  ): Promise<ApiResponse<{ recipientCount: number }>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/newsletter/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(newsletterData),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return {
+        status: 'error',
+        message: error.message || 'Failed to send newsletter',
+      };
+    }
+  },
+
+  deleteNewsletterSubscriber: async (token: string, subscriberId: string): Promise<ApiResponse<null>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/newsletter/subscriber/${subscriberId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return {
+        status: 'error',
+        message: error.message || 'Failed to delete subscriber',
+      };
+    }
   },
 };
 

@@ -193,23 +193,36 @@ reviewSchema.statics.getStats = function(productId = null) {
   ]);
 };
 
-// Method to approve review
-reviewSchema.methods.approve = function(moderatorId, notes = null) {
+// Method to approve review and update product rating
+reviewSchema.methods.approve = async function(moderatorId, notes = null) {
   this.isApproved = true;
   if (notes) {
     this.moderationNotes = notes;
   }
-  return this.save();
+  await this.save();
+  
+  // Update product rating after approval
+  await this.updateProductRating();
+  
+  return this;
 };
 
-// Method to reject review
-reviewSchema.methods.reject = function(moderatorId, notes = null) {
+// Method to reject review and update product rating
+reviewSchema.methods.reject = async function(moderatorId, notes = null) {
+  const wasApproved = this.isApproved;
   this.isApproved = false;
   this.isActive = false;
   if (notes) {
     this.moderationNotes = notes;
   }
-  return this.save();
+  await this.save();
+  
+  // Update product rating if it was previously approved
+  if (wasApproved) {
+    await this.updateProductRating();
+  }
+  
+  return this;
 };
 
 // Method to add admin response
@@ -238,5 +251,61 @@ reviewSchema.methods.report = function(userId, reason) {
   
   return this.save();
 };
+
+// Method to update product rating based on all approved reviews
+reviewSchema.methods.updateProductRating = async function() {
+  const Product = mongoose.model('Product');
+  const Review = mongoose.model('Review');
+  
+  try {
+    // Calculate stats for this product
+    const stats = await Review.aggregate([
+      {
+        $match: {
+          product: this.product,
+          isApproved: true,
+          isActive: true
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          totalReviews: { $sum: 1 }
+        }
+      }
+    ]);
+    
+    // Update product with new rating and review count
+    if (stats.length > 0) {
+      await Product.findByIdAndUpdate(this.product, {
+        rating: parseFloat(stats[0].averageRating.toFixed(1)),
+        reviewCount: stats[0].totalReviews
+      });
+    } else {
+      // No approved reviews, reset to 0
+      await Product.findByIdAndUpdate(this.product, {
+        rating: 0,
+        reviewCount: 0
+      });
+    }
+  } catch (error) {
+    console.error('Error updating product rating:', error);
+  }
+};
+
+// Hook to update product rating after a review is deleted
+reviewSchema.post('findOneAndDelete', async function(doc) {
+  if (doc && doc.isApproved && doc.isActive) {
+    await doc.updateProductRating();
+  }
+});
+
+// Hook to update product rating after a review is removed
+reviewSchema.post('remove', async function(doc) {
+  if (doc.isApproved && doc.isActive) {
+    await doc.updateProductRating();
+  }
+});
 
 export default mongoose.model('Review', reviewSchema);

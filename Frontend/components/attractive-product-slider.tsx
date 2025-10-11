@@ -214,7 +214,7 @@ export function AttractiveProductSlider({
               <TrendingUp className="w-5 h-5" />
               {badge}
             </div>
-            <h2 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <h2 className="text-5xl font-bold !ext-black mb-4">
               {title}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">{subtitle}</p>
@@ -251,7 +251,7 @@ export function AttractiveProductSlider({
   }
 
   return (
-    <section className="py-12 bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+    <section className="py-8 lg:py-12 bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
@@ -261,34 +261,34 @@ export function AttractiveProductSlider({
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header Section */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 px-4 py-2 rounded-full text-xs font-semibold mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <Sparkles className="w-4 h-4 fill-current animate-pulse" />
-            <TrendingUp className="w-4 h-4" />
+        <div className="text-center mb-6 lg:mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full text-xs font-semibold mb-3 lg:mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <Sparkles className="w-3 lg:w-4 h-3 lg:h-4 fill-current animate-pulse" />
+            <TrendingUp className="w-3 lg:w-4 h-3 lg:h-4" />
             {badge}
           </div>
           
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 leading-tight">
+          <h2 className="text-2xl lg:text-3xl font-bold text-black mb-2 lg:mb-3 leading-tight">
             {title}
           </h2>
           
-          <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed mb-6">
+          <p className="text-sm lg:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed mb-4 lg:mb-6">
             {subtitle}
           </p>
 
           {/* Stats */}
-          <div className="flex justify-center gap-8 mb-6">
+          <div className="flex justify-center gap-4 lg:gap-8 mb-4 lg:mb-6">
             <div className="text-center group">
-              <div className="text-2xl font-bold text-indigo-600 mb-1 group-hover:scale-110 transition-transform duration-300">{products.length}+</div>
-              <div className="text-sm text-gray-600 font-medium">Products</div>
+              <div className="text-lg lg:text-2xl font-bold text-indigo-600 mb-1 group-hover:scale-110 transition-transform duration-300">{products.length}+</div>
+              <div className="text-xs lg:text-sm text-gray-600 font-medium">Products</div>
             </div>
             <div className="text-center group">
-              <div className="text-2xl font-bold text-purple-600 mb-1 group-hover:scale-110 transition-transform duration-300">4.8</div>
-              <div className="text-sm text-gray-600 font-medium">Avg Rating</div>
+              <div className="text-lg lg:text-2xl font-bold text-purple-600 mb-1 group-hover:scale-110 transition-transform duration-300">4.8</div>
+              <div className="text-xs lg:text-sm text-gray-600 font-medium">Avg Rating</div>
             </div>
             <div className="text-center group">
-              <div className="text-2xl font-bold text-pink-600 mb-1 group-hover:scale-110 transition-transform duration-300">100%</div>
-              <div className="text-sm text-gray-600 font-medium">Quality</div>
+              <div className="text-lg lg:text-2xl font-bold text-pink-600 mb-1 group-hover:scale-110 transition-transform duration-300">100%</div>
+              <div className="text-xs lg:text-sm text-gray-600 font-medium">Quality</div>
             </div>
           </div>
         </div>
@@ -304,14 +304,21 @@ export function AttractiveProductSlider({
           onMouseUp={handleDragEnd}
           // onMouseLeave={handleDragEnd}
         >
-          {/* Products Grid */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-700 ease-out ${
-            isTransitioning ? 'opacity-60 scale-95' : 'opacity-100 scale-100'
-          }`}>
+          {/* Products Grid - Horizontal scroll on mobile, grid on desktop */}
+          <div 
+            className={`flex lg:grid overflow-x-auto lg:overflow-x-visible lg:grid-cols-4 gap-4 lg:gap-6 transition-all duration-700 ease-out snap-x snap-mandatory lg:snap-none pb-2 lg:pb-0 px-4 lg:px-0 ${
+              isTransitioning ? 'opacity-60 scale-95' : 'opacity-100 scale-100'
+            }`}
+            style={{ 
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
             {visibleProducts.map((product, index) => (
               <div
                 key={product._id}
-                className={`group relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 ease-out overflow-hidden border border-gray-100 cursor-pointer ${
+                className={`group relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-700 ease-out overflow-hidden border border-gray-100 cursor-pointer flex-shrink-0 w-[calc(100vw-2rem)] sm:w-[280px] lg:w-auto snap-center ${
                   isTransitioning ? 'translate-y-8 opacity-70' : 'translate-y-0 opacity-100'
                 } ${hoveredCard === product._id ? 'scale-105 z-10' : 'scale-100'}`}
                 style={{ 
@@ -323,7 +330,7 @@ export function AttractiveProductSlider({
                 onClick={() => router.push(`/products/${product._id}`)}
               >
                 {/* Product Image Container */}
-                <div className="relative h-56 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                <div className="relative h-48 lg:h-56 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
                   <Image
                     src={product.images?.[0] || '/placeholder.jpg'}
                     alt={product.name}
@@ -390,26 +397,26 @@ export function AttractiveProductSlider({
                 </div>
 
                 {/* Product Info */}
-                <div className="p-4">
+                <div className="p-3 lg:p-4">
                   {/* Category */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-medium text-indigo-600 uppercase tracking-wide">
+                  <div className="flex items-center gap-2 mb-1.5 lg:mb-2">
+                    <span className="text-[10px] lg:text-xs font-medium text-indigo-600 uppercase tracking-wide">
                       {product.category?.replace('-', ' ') || 'Beauty'}
                     </span>
                   </div>
 
                   {/* Product Name */}
-                  <h3 className="font-bold text-gray-900 text-base mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors duration-300 leading-tight">
+                  <h3 className="font-bold text-gray-900 text-sm lg:text-base mb-1.5 lg:mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors duration-300 leading-tight">
                     {product.name}
                   </h3>
                   
                   {/* Rating */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5 lg:gap-2 mb-1.5 lg:mb-2">
+                    <div className="flex items-center gap-0.5 lg:gap-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-3 h-3 transition-all duration-300 ${
+                          className={`w-2.5 lg:w-3 h-2.5 lg:h-3 transition-all duration-300 ${
                             i < Math.floor(product.rating || 4.5)
                               ? 'text-yellow-400 fill-current'
                               : 'text-gray-300'
@@ -417,26 +424,26 @@ export function AttractiveProductSlider({
                         />
                       ))}
                     </div>
-                    <span className="text-xs font-bold text-gray-700">
+                    <span className="text-[10px] lg:text-xs font-bold text-gray-700">
                       {product.rating?.toFixed(1) || '4.5'}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-[10px] lg:text-xs text-gray-500">
                       ({product.reviewsCount?.toLocaleString() || '0'})
                     </span>
                   </div>
 
                   {/* Price */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg font-bold text-gray-900">
-                      ${product.price.toFixed(2)}
+                  <div className="flex items-center gap-1.5 lg:gap-2 mb-2 lg:mb-3">
+                    <span className="text-base lg:text-lg font-bold text-gray-900">
+                      Rs {product.price.toFixed(2)}
                     </span>
                     {product.originalPrice && product.originalPrice > product.price && (
                       <>
-                        <span className="text-sm text-gray-400 line-through">
-                          ${product.originalPrice.toFixed(2)}
+                        <span className="text-xs lg:text-sm text-gray-400 line-through">
+                          Rs {product.originalPrice.toFixed(2)}
                         </span>
-                        <span className="bg-red-100 text-red-800 px-1.5 py-0.5 rounded-full text-xs font-bold">
-                          Save ${(product.originalPrice - product.price).toFixed(2)}
+                        <span className="bg-red-100 text-red-800 px-1 lg:px-1.5 py-0.5 rounded-full text-[10px] lg:text-xs font-bold">
+                          Save Rs {(product.originalPrice - product.price).toFixed(2)}
                         </span>
                       </>
                     )}
@@ -450,11 +457,11 @@ export function AttractiveProductSlider({
                       console.log('Add to cart button clicked!', product)
                       handleAddToCart(product)
                     }}
-                    className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold py-3 rounded-2xl transition-all duration-500 hover:scale-105 shadow-xl group-hover:shadow-2xl"
+                    className="w-full bg-black text-white font-bold py-2 lg:py-3 rounded-xl lg:rounded-2xl transition-all duration-500 hover:scale-105 shadow-xl group-hover:shadow-2xl text-xs lg:text-sm"
                     size="sm"
                     style={{ zIndex: 9999, position: 'relative' }}
                   >
-                    <Zap className="w-4 h-4 mr-2" />
+                    <Zap className="w-3 lg:w-4 h-3 lg:h-4 mr-1.5 lg:mr-2" />
                     Add to Cart
                   </Button>
                 </div>
@@ -465,20 +472,20 @@ export function AttractiveProductSlider({
             ))}
           </div>
 
-          {/* Navigation Arrows */}
+          {/* Navigation Arrows - Hidden on mobile */}
           {products.length > itemsPerView && (
             <>
               <button
                 onClick={prevSlide}
                 disabled={isTransitioning}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
+                className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
                 onClick={nextSlide}
                 disabled={isTransitioning}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
+                className="hidden lg:block absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
@@ -486,9 +493,9 @@ export function AttractiveProductSlider({
           )}
         </div>
 
-        {/* Dots Indicator */}
+        {/* Dots Indicator - Hidden on mobile */}
         {products.length > itemsPerView && (
-          <div className="flex justify-center gap-3 mt-12">
+          <div className="hidden lg:flex justify-center gap-3 mt-12">
             {Array.from({ length: maxIndex + 1 }, (_, index) => (
               <button
                 key={index}
@@ -505,15 +512,14 @@ export function AttractiveProductSlider({
         )}
 
         {/* View All Button */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-6 lg:mt-8">
           <Button 
             onClick={() => router.push('/products')}
-            variant="outline" 
-            size="md"
-            className="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-indigo-300 text-gray-700 hover:text-indigo-600 font-bold px-6 py-2.5 rounded-lg transition-all duration-500 hover:scale-105 shadow-lg"
+            size="lg"
+            className="bg-black hover:bg-gray-800 text-white font-bold px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg transition-all duration-500 hover:scale-105 shadow-lg text-xs lg:text-sm"
           >
             View All Products
-            <ChevronRight className="w-4 h-4 ml-2" />
+            <ChevronRight className="w-3 lg:w-4 h-3 lg:h-4 ml-1.5 lg:ml-2" />
           </Button>
         </div>
       </div>
@@ -584,15 +590,15 @@ export function AttractiveProductSlider({
                   {/* Price */}
                   <div className="flex items-center gap-4 mb-6">
                     <span className="text-4xl font-bold text-gray-900">
-                      PKR {selectedProduct.price.toFixed(2)}
+                      Rs {selectedProduct.price.toFixed(2)}
                     </span>
                     {selectedProduct.originalPrice && selectedProduct.originalPrice > selectedProduct.price && (
                       <>
                         <span className="text-2xl text-gray-400 line-through">
-                          PKR {selectedProduct.originalPrice.toFixed(2)}
+                          Rs {selectedProduct.originalPrice.toFixed(2)}
                         </span>
                         <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-bold">
-                          Save PKR {(selectedProduct.originalPrice - selectedProduct.price).toFixed(2)}
+                          Save Rs {(selectedProduct.originalPrice - selectedProduct.price).toFixed(2)}
                         </span>
                       </>
                     )}
@@ -623,7 +629,7 @@ export function AttractiveProductSlider({
                 <div className="space-y-3">
                   <Button 
                     onClick={() => handleAddToCart(selectedProduct)}
-                    className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold py-4 rounded-2xl transition-all duration-500 hover:scale-105 shadow-xl"
+                    className="w-full bg-black text-white font-bold py-4 rounded-2xl transition-all duration-500 hover:scale-105 shadow-xl"
                     size="lg"
                   >
                     <ShoppingCart className="w-5 h-5 mr-2" />

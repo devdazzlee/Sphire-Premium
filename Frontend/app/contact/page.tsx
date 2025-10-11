@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useGSAP } from "@/hooks/use-gsap"
-import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from "lucide-react"
+import { Mail, Phone, MapPin, Clock, Send, MessageCircle, Instagram, Facebook, Twitter, Youtube } from "lucide-react"
 
 export default function ContactPage() {
   const { ref, gsap } = useGSAP()
@@ -111,10 +111,10 @@ export default function ContactPage() {
   ]
 
   const socialLinks = [
-    { name: "Instagram", url: "#", color: "hover:text-pink-500" },
-    { name: "Facebook", url: "#", color: "hover:text-blue-500" },
-    { name: "Twitter", url: "#", color: "hover:text-blue-400" },
-    { name: "YouTube", url: "#", color: "hover:text-red-500" },
+    { name: "Instagram", url: "#", color: "hover:text-pink-500", icon: Instagram },
+    { name: "Facebook", url: "#", color: "hover:text-blue-500", icon: Facebook },
+    { name: "Twitter", url: "#", color: "hover:text-blue-400", icon: Twitter },
+    { name: "YouTube", url: "#", color: "hover:text-red-500", icon: Youtube },
   ]
 
   return (
@@ -134,11 +134,11 @@ export default function ContactPage() {
       {/* Main Content */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Contact Form */}
-            <Card className="contact-form border-border shadow-lg">
+            <Card className="contact-form px-4 py-4 border-border shadow-lg">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-foreground flex items-center">
+                <CardTitle className="text-2xl font-bold text-foreground flex items-center mx-auto">
                   <MessageCircle className="w-6 h-6 mr-2 text-accent" />
                   Send us a Message
                 </CardTitle>
@@ -233,6 +233,24 @@ export default function ContactPage() {
                   </Button>
                 </form>
               </CardContent>
+              <div className="mx-auto" >
+                <h3 className="text-xl font-semibold text-foreground mb-4 text-center">Follow Us</h3>
+                <div className="flex space-x-4">
+                  {socialLinks.map((social, index) => {
+                    const Icon = social.icon
+                    return (
+                      <a
+                        key={index}
+                        href={social.url}
+                        className={`social-link text-muted-foreground ${social.color} transition-colors p-2 rounded-full hover:bg-secondary`}
+                      >
+                        <span className="sr-only">{social.name}</span>
+                        <Icon className="w-6 h-6" />
+                      </a>
+                    )
+                  })}
+                </div>
+              </div>
             </Card>
 
             {/* Contact Information */}
@@ -262,28 +280,14 @@ export default function ContactPage() {
               </div>
 
               {/* Social Media Links */}
-              <div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">Follow Us</h3>
-                <div className="flex space-x-4">
-                  {socialLinks.map((social, index) => (
-                    <a
-                      key={index}
-                      href={social.url}
-                      className={`social-link text-muted-foreground ${social.color} transition-colors p-2 rounded-full hover:bg-secondary`}
-                    >
-                      <span className="sr-only">{social.name}</span>
-                      <div className="w-6 h-6 bg-current rounded"></div>
-                    </a>
-                  ))}
-                </div>
-              </div>
+            
             </div>
           </div>
         </div>
       </section>
 
       {/* Map Section */}
-      <section className="py-16 px-4 bg-secondary">
+      {/* <section className="py-16 px-4 bg-secondary">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-foreground mb-4">Find Our Store</h2>
@@ -299,7 +303,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <Footer />
     </div>

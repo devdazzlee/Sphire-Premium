@@ -2,10 +2,11 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { usePathname } from "next/navigation"
-import { Search, X, ChevronDown } from "lucide-react"
+import { Search, X, ChevronDown, Heart } from "lucide-react"
 import { CartIcon } from "@/components/cart-icon"
 import { CartDrawer } from "@/components/cart-drawer"
 import { AccountDropdown } from "@/components/account-dropdown"
+import { useWishlist } from "@/contexts/wishlist-context"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -13,6 +14,7 @@ export function AnimatedHeader() {
   const router = useRouter()
   const pathname = usePathname()
   const ref = useRef<HTMLDivElement>(null)
+  const { itemCount } = useWishlist()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMenuAnimating, setIsMenuAnimating] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
@@ -272,6 +274,16 @@ export function AnimatedHeader() {
               </button>
               <div className="header-item">
                 <AccountDropdown />
+              </div>
+              <div className="header-item">
+                <Link href="/wishlist" className="relative group">
+                  <Heart className="w-5 h-5 md:w-6 md:h-6 text-gray-700 group-hover:text-red-500 group-hover:fill-red-500 transition-all duration-200 stroke-1" />
+                  {itemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-in zoom-in">
+                      {itemCount}
+                    </span>
+                  )}
+                </Link>
               </div>
               <div className="header-item">
                 <CartIcon onClick={toggleCart} />

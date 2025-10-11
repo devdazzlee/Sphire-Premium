@@ -251,25 +251,25 @@ export default function CheckoutPage() {
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <AnimatedHeader />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 md:py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <Button
             variant="ghost"
             onClick={() => router.push('/cart')}
-            className="mb-4 text-gray-600 hover:text-gray-900"
+            className="mb-3 md:mb-4 text-gray-600 hover:text-gray-900 text-sm md:text-base"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
             Back to Cart
           </Button>
           
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Checkout</h1>
-          <p className="text-gray-600">Complete your order securely</p>
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-1 md:mb-2">Checkout</h1>
+          <p className="text-sm md:text-base text-gray-600">Complete your order securely</p>
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-12">
-          <div className="flex items-center justify-center">
+        <div className="mb-6 md:mb-12">
+          <div className="flex items-center justify-between md:justify-center px-2">
             {steps.map((step, index) => {
               const Icon = step.icon
               const isActive = currentStep >= step.id
@@ -277,26 +277,28 @@ export default function CheckoutPage() {
               
               return (
                 <div key={step.id} className="flex items-center">
-                  <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 ${
-                    isCompleted 
-                      ? 'bg-green-500 border-green-500 text-white' 
-                      : isActive 
-                        ? 'bg-blue-500 border-blue-500 text-white' 
-                        : 'bg-white border-gray-300 text-gray-400'
-                  }`}>
-                    {isCompleted ? (
-                      <CheckCircle className="w-6 h-6" />
-                    ) : (
-                      <Icon className="w-6 h-6" />
-                    )}
+                  <div className="flex flex-col md:flex-row items-center">
+                    <div className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 ${
+                      isCompleted 
+                        ? 'bg-green-500 border-green-500 text-white' 
+                        : isActive 
+                          ? 'bg-blue-500 border-blue-500 text-white' 
+                          : 'bg-white border-gray-300 text-gray-400'
+                    }`}>
+                      {isCompleted ? (
+                        <CheckCircle className="w-4 h-4 md:w-6 md:h-6" />
+                      ) : (
+                        <Icon className="w-4 h-4 md:w-6 md:h-6" />
+                      )}
+                    </div>
+                    <span className={`mt-1 md:mt-0 md:ml-3 font-medium text-xs md:text-base ${
+                      isActive ? 'text-gray-900' : 'text-gray-500'
+                    }`}>
+                      {step.name}
+                    </span>
                   </div>
-                  <span className={`ml-3 font-medium ${
-                    isActive ? 'text-gray-900' : 'text-gray-500'
-                  }`}>
-                    {step.name}
-                  </span>
                   {index < steps.length - 1 && (
-                    <div className={`w-16 h-0.5 mx-4 transition-all duration-300 ${
+                    <div className={`w-8 md:w-16 h-0.5 mx-2 md:mx-4 mt-0 md:mt-0 transition-all duration-300 ${
                       isCompleted ? 'bg-green-500' : 'bg-gray-300'
                     }`} />
                   )}
@@ -306,27 +308,27 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Step 1: Shipping Address */}
             {currentStep === 1 && (
               <Card className="border-0 shadow-xl">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
-                  <CardTitle className="flex items-center text-lg md:text-xl">
-                    <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 md:p-6">
+                  <CardTitle className="flex items-center text-base md:text-xl">
+                    <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-600" />
                     Shipping Address
                   </CardTitle>
-                  <CardDescription className="text-sm">Select or add a shipping address</CardDescription>
+                  <CardDescription className="text-xs md:text-sm">Select or add a shipping address</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 md:p-6">
                   {addresses.length > 0 && (
-                    <div className="space-y-4 mb-8">
-                      <h4 className="font-semibold text-gray-900">Select Address</h4>
+                    <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
+                      <h4 className="font-semibold text-gray-900 text-sm md:text-base">Select Address</h4>
                       {addresses.map((address) => (
                         <div
                           key={address._id}
-                          className={`p-4 md:p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
+                          className={`p-3 md:p-6 border-2 rounded-lg md:rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg ${
                             selectedAddress?._id === address._id
                               ? 'border-blue-500 bg-blue-50 shadow-lg'
                               : 'border-gray-200 hover:border-gray-300'
@@ -335,8 +337,8 @@ export default function CheckoutPage() {
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <div className="flex items-center space-x-3 mb-3">
-                                <span className="text-sm font-semibold capitalize bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                              <div className="flex items-center flex-wrap gap-2 mb-2 md:mb-3">
+                                <span className="text-xs md:text-sm font-semibold capitalize bg-gray-100 text-gray-700 px-2 md:px-3 py-1 rounded-full">
                                   {address.type}
                                 </span>
                                 {address.isDefault && (
@@ -345,14 +347,14 @@ export default function CheckoutPage() {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-gray-700 font-medium">{address.street}</p>
-                              <p className="text-gray-600">
+                              <p className="text-sm md:text-base text-gray-700 font-medium">{address.street}</p>
+                              <p className="text-xs md:text-sm text-gray-600">
                                 {address.city}, {address.state} {address.zipCode}
                               </p>
-                              <p className="text-gray-600">{address.country}</p>
+                              <p className="text-xs md:text-sm text-gray-600">{address.country}</p>
                             </div>
                             {selectedAddress?._id === address._id && (
-                              <CheckCircle className="w-6 h-6 text-blue-500" />
+                              <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-blue-500 flex-shrink-0" />
                             )}
                           </div>
                         </div>
@@ -361,29 +363,29 @@ export default function CheckoutPage() {
                   )}
 
                   {/* Add New Address */}
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-gray-900">
+                      <h4 className="font-semibold text-gray-900 text-sm md:text-base">
                         {addresses.length > 0 ? 'Add New Address' : 'Add Address'}
                       </h4>
                       <Button
                         variant="outline"
                         onClick={() => setIsAddingAddress(!isAddingAddress)}
-                        className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        className="text-blue-600 border-blue-200 hover:bg-blue-50 text-xs md:text-sm px-3 md:px-4 py-2"
                       >
                         {isAddingAddress ? 'Cancel' : '+ Add New'}
                       </Button>
                     </div>
 
                     {isAddingAddress && (
-                      <div className="bg-gray-50 p-4 md:p-6 rounded-xl space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-gray-50 p-3 md:p-6 rounded-lg md:rounded-xl space-y-3 md:space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                           <div>
-                            <Label htmlFor="addressType">Address Type</Label>
+                            <Label htmlFor="addressType" className="text-xs md:text-sm">Address Type</Label>
                             <select
                               value={addressForm.type}
                               onChange={(e) => setAddressForm({ ...addressForm, type: e.target.value as any })}
-                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full p-2 md:p-3 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             >
                               <option value="home">Home</option>
                               <option value="work">Work</option>
@@ -391,54 +393,54 @@ export default function CheckoutPage() {
                             </select>
                           </div>
                           <div>
-                            <Label htmlFor="zipCode">ZIP Code</Label>
+                            <Label htmlFor="zipCode" className="text-xs md:text-sm">ZIP Code</Label>
                             <Input
                               id="zipCode"
                               value={addressForm.zipCode}
                               onChange={(e) => setAddressForm({ ...addressForm, zipCode: e.target.value })}
                               placeholder="12345"
-                              className="p-3"
+                              className="p-2 md:p-3 text-sm md:text-base"
                             />
                           </div>
                         </div>
                         
                         <div>
-                          <Label htmlFor="street">Street Address</Label>
+                          <Label htmlFor="street" className="text-xs md:text-sm">Street Address</Label>
                           <Input
                             id="street"
                             value={addressForm.street}
                             onChange={(e) => setAddressForm({ ...addressForm, street: e.target.value })}
                             placeholder="123 Main Street"
-                            className="p-3"
+                            className="p-2 md:p-3 text-sm md:text-base"
                           />
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                           <div>
-                            <Label htmlFor="city">City</Label>
+                            <Label htmlFor="city" className="text-xs md:text-sm">City</Label>
                             <Input
                               id="city"
                               value={addressForm.city}
                               onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
                               placeholder="New York"
-                              className="p-3"
+                              className="p-2 md:p-3 text-sm md:text-base"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="state">State</Label>
+                            <Label htmlFor="state" className="text-xs md:text-sm">State</Label>
                             <Input
                               id="state"
                               value={addressForm.state}
                               onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })}
                               placeholder="NY"
-                              className="p-3"
+                              className="p-2 md:p-3 text-sm md:text-base"
                             />
                           </div>
                         </div>
                         
                         <Button
                           onClick={handleAddAddress}
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 md:py-3 rounded-lg text-sm md:text-base"
                         >
                           Add Address
                         </Button>
@@ -452,48 +454,48 @@ export default function CheckoutPage() {
             {/* Step 2: Review Order */}
             {currentStep === 2 && (
               <Card className="border-0 shadow-xl">
-                <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50">
-                  <CardTitle className="flex items-center text-2xl">
-                    <Package className="w-6 h-6 mr-3 text-green-600" />
+                <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 p-4 md:p-6">
+                  <CardTitle className="flex items-center text-lg md:text-2xl">
+                    <Package className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3 text-green-600" />
                     Review Your Order
                   </CardTitle>
-                  <CardDescription>Review your items and shipping details</CardDescription>
+                  <CardDescription className="text-xs md:text-sm">Review your items and shipping details</CardDescription>
                 </CardHeader>
-                <CardContent className="p-8">
+                <CardContent className="p-4 md:p-8">
                   {/* Order Items */}
-                  <div className="space-y-6">
-                    <h4 className="font-semibold text-gray-900 text-lg">Order Items</h4>
-                    <div className="space-y-4">
+                  <div className="space-y-4 md:space-y-6">
+                    <h4 className="font-semibold text-gray-900 text-sm md:text-lg">Order Items</h4>
+                    <div className="space-y-3 md:space-y-4">
                       {items.map((item) => (
-                        <div key={item.product._id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
-                          <div className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                        <div key={item.product._id} className="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 bg-gray-50 rounded-lg md:rounded-xl">
+                          <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                             <img
                               src={item.product.images[0] || '/placeholder.jpg'}
                               alt={item.product.name}
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="flex-1">
-                            <h5 className="font-medium text-gray-900">{item.product.name}</h5>
-                            <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                          <div className="flex-1 min-w-0">
+                            <h5 className="font-medium text-gray-900 text-sm md:text-base truncate">{item.product.name}</h5>
+                            <p className="text-xs md:text-sm text-gray-600">Quantity: {item.quantity}</p>
                           </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-gray-900">PKR {(item.product.price || 0).toFixed(2)}</p>
+                          <div className="text-right flex-shrink-0">
+                            <p className="font-semibold text-gray-900 text-sm md:text-base">Rs {(item.product.price || 0).toFixed(2)}</p>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <Separator className="my-8" />
+                  <Separator className="my-6 md:my-8" />
 
                   {/* Shipping Address */}
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-gray-900 text-lg">Shipping Address</h4>
+                  <div className="space-y-3 md:space-y-4">
+                    <h4 className="font-semibold text-gray-900 text-sm md:text-lg">Shipping Address</h4>
                     {selectedAddress ? (
-                      <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <span className="text-sm font-semibold capitalize bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                      <div className="p-3 md:p-4 bg-blue-50 rounded-lg md:rounded-xl border border-blue-200">
+                        <div className="flex items-center flex-wrap gap-2 mb-2">
+                          <span className="text-xs md:text-sm font-semibold capitalize bg-blue-100 text-blue-700 px-2 md:px-3 py-1 rounded-full">
                             {selectedAddress.type}
                           </span>
                           {selectedAddress.isDefault && (
@@ -502,25 +504,25 @@ export default function CheckoutPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-gray-700 font-medium">{selectedAddress.street}</p>
-                        <p className="text-gray-600">
+                        <p className="text-sm md:text-base text-gray-700 font-medium">{selectedAddress.street}</p>
+                        <p className="text-xs md:text-sm text-gray-600">
                           {selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}
                         </p>
-                        <p className="text-gray-600">{selectedAddress.country}</p>
+                        <p className="text-xs md:text-sm text-gray-600">{selectedAddress.country}</p>
                       </div>
                     ) : (
-                      <p className="text-red-600">No shipping address selected</p>
+                      <p className="text-red-600 text-sm md:text-base">No shipping address selected</p>
                     )}
                     </div>
 
                   {/* Order Notes */}
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-gray-900 text-lg">Order Notes</h4>
+                  <div className="space-y-3 md:space-y-4">
+                    <h4 className="font-semibold text-gray-900 text-sm md:text-lg">Order Notes</h4>
                     <textarea
                       value={orderNotes}
                       onChange={(e) => setOrderNotes(e.target.value)}
                       placeholder="Any special instructions for delivery..."
-                      className="w-full p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full p-3 md:p-4 text-sm md:text-base border border-gray-300 rounded-lg md:rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       rows={3}
                     />
                   </div>
@@ -531,31 +533,31 @@ export default function CheckoutPage() {
             {/* Step 3: Payment */}
             {currentStep === 3 && (
               <Card className="border-0 shadow-xl">
-                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
-                  <CardTitle className="flex items-center text-2xl">
-                    <CreditCard className="w-6 h-6 mr-3 text-purple-600" />
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 md:p-6">
+                  <CardTitle className="flex items-center text-lg md:text-2xl">
+                    <CreditCard className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3 text-purple-600" />
                     Payment Method
                   </CardTitle>
-                  <CardDescription>Cash on Delivery - Pay when your order arrives</CardDescription>
+                  <CardDescription className="text-xs md:text-sm">Cash on Delivery - Pay when your order arrives</CardDescription>
                 </CardHeader>
-                <CardContent className="p-8">
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-200">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <Truck className="w-8 h-8 text-blue-600" />
+                <CardContent className="p-4 md:p-8">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200">
+                    <div className="flex items-center space-x-3 md:space-x-4">
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Truck className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-blue-900 text-lg">Cash on Delivery</h4>
-                        <p className="text-blue-700">
+                        <h4 className="font-semibold text-blue-900 text-sm md:text-lg">Cash on Delivery</h4>
+                        <p className="text-blue-700 text-xs md:text-base">
                           Pay with cash when your order is delivered. No online payment required.
                         </p>
-                        <div className="flex items-center space-x-4 mt-2">
-                          <div className="flex items-center space-x-1 text-sm text-blue-600">
-                            <Shield className="w-4 h-4" />
+                        <div className="flex items-center space-x-3 md:space-x-4 mt-2">
+                          <div className="flex items-center space-x-1 text-xs md:text-sm text-blue-600">
+                            <Shield className="w-3 h-3 md:w-4 md:h-4" />
                             <span>Secure</span>
                           </div>
-                          <div className="flex items-center space-x-1 text-sm text-blue-600">
-                            <Clock className="w-4 h-4" />
+                          <div className="flex items-center space-x-1 text-xs md:text-sm text-blue-600">
+                            <Clock className="w-3 h-3 md:w-4 md:h-4" />
                             <span>Convenient</span>
                           </div>
                         </div>
@@ -568,16 +570,16 @@ export default function CheckoutPage() {
             </div>
 
           {/* Order Summary Sidebar */}
-            <div className="space-y-6">
-            <Card className="border-0 shadow-xl sticky top-8">
-              <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
+            <div className="space-y-4 md:space-y-6">
+            <Card className="border-0 shadow-xl lg:sticky lg:top-8">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 md:p-6">
                 <CardTitle className="flex items-center text-base md:text-lg">
                   <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   Order Summary
                 </CardTitle>
                 </CardHeader>
               <CardContent className="p-4 md:p-6">
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                     {items.map((item) => (
                     <div key={item.product._id} className="flex items-center space-x-2 md:space-x-3">
                       <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
@@ -591,39 +593,39 @@ export default function CheckoutPage() {
                         <p className="text-xs md:text-sm font-medium text-gray-900 truncate">{item.product.name}</p>
                         <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                       </div>
-                      <p className="text-xs md:text-sm font-semibold text-gray-900">PKR {(item.product.price || 0).toFixed(2)}</p>
+                      <p className="text-xs md:text-sm font-semibold text-gray-900 flex-shrink-0">Rs {(item.product.price || 0).toFixed(2)}</p>
                       </div>
                     ))}
                   </div>
 
-                <Separator className="my-6" />
+                <Separator className="my-4 md:my-6" />
 
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
+                <div className="space-y-2 md:space-y-3">
+                  <div className="flex justify-between text-xs md:text-sm">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">PKR {(total || 0).toFixed(2)}</span>
+                    <span className="font-medium">Rs {(total || 0).toFixed(2)}</span>
                     </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs md:text-sm">
                     <span className="text-gray-600">Shipping</span>
                     <span className="font-medium text-green-600">FREE</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs md:text-sm">
                     <span className="text-gray-600">Tax</span>
-                    <span className="font-medium">PKR 0.00</span>
+                    <span className="font-medium">Rs 0.00</span>
                   </div>
                   <Separator />
-                  <div className="flex justify-between text-lg font-bold">
+                  <div className="flex justify-between text-base md:text-lg font-bold">
                     <span>Total</span>
-                    <span>PKR {(total || 0).toFixed(2)}</span>
+                    <span>Rs {(total || 0).toFixed(2)}</span>
                   </div>
                   </div>
 
-                <div className="mt-8 space-y-4">
+                <div className="mt-6 md:mt-8 space-y-3 md:space-y-4">
                   {currentStep < 3 ? (
                     <Button
                       onClick={() => setCurrentStep(currentStep + 1)}
                       disabled={currentStep === 1 && !selectedAddress}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 md:py-3 rounded-lg text-sm md:text-base"
                     >
                       Continue to {steps[currentStep]?.name}
                     </Button>
@@ -631,7 +633,7 @@ export default function CheckoutPage() {
                   <Button
                     onClick={handlePlaceOrder}
                       disabled={isLoading || !selectedAddress}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 md:py-3 rounded-lg text-sm md:text-base"
                     >
                       {isLoading ? 'Placing Order...' : 'Place Order'}
                     </Button>
@@ -641,7 +643,7 @@ export default function CheckoutPage() {
                     <Button
                       variant="outline"
                       onClick={() => setCurrentStep(currentStep - 1)}
-                      className="w-full"
+                      className="w-full text-sm md:text-base py-2.5 md:py-3"
                     >
                       Back to {steps[currentStep - 2]?.name}
                   </Button>

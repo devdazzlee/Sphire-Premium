@@ -16,6 +16,7 @@ export default function HomePage() {
       <AnimatedHeader />
       <ModernHeroBanner />
       <CircularGallery />
+      <FeaturedCategories />
       <AttractiveProductSlider 
         title="Trending Products"
         subtitle="Discover our most popular and trending products that everyone is loving right now. Handpicked for their exceptional quality and customer satisfaction."
@@ -25,15 +26,15 @@ export default function HomePage() {
         autoPlay={true}
         autoPlaySpeed={4000}
       />
-      <FeaturedCategories />
-      <DynamicProductSlider 
+    
+      {/* <DynamicProductSlider 
         title="Customer Favorites"
         subtitle="Discover our most loved products that customers can't get enough of. Each item is carefully selected based on reviews, ratings, and sales performance."
         badge="Customer Favorites"
         apiEndpoint="all"
         limit={6}
-      />
-      <CircularGallery />
+      /> */}
+      {/* <CircularGallery /> */}
       <AnimatedCustomerBenefits />
       {/* <AnimatedReviews /> */}
       <Footer />

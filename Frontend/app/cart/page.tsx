@@ -42,7 +42,7 @@ export default function CartPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-light tracking-wide text-gray-800 mb-2">Shopping Cart</h1>
           <p className="text-gray-600">
-            {itemCount === 0 ? "Your cart is empty" : `PKR {itemCount} item${itemCount !== 1 ? "s" : ""} in your cart`}
+            {itemCount === 0 ? "Your cart is empty" : `${itemCount} item${itemCount !== 1 ? "s" : ""} in your cart`}
           </p>
         </div>
 
@@ -89,7 +89,7 @@ export default function CartPage() {
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <h3 className="font-medium text-gray-800 mb-1">{item.product.name}</h3>
-                              <p className="text-sm text-gray-500">{item.product.category.replace("-", " ")}</p>
+                              <p className="text-sm text-gray-500">{item.product.category?.replace("-", " ") || "Uncategorized"}</p>
                             </div>
                             <Button
                               variant="ghost"
@@ -104,10 +104,10 @@ export default function CartPage() {
                           <div className="flex items-center justify-between">
                             {/* Price */}
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-800">PKR {item.product.price.toFixed(2)}</span>
+                              <span className="font-semibold text-gray-800">Rs {item.product.price.toFixed(2)}</span>
                               {item.product.originalPrice && (
                                 <span className="text-sm text-gray-500 line-through">
-                                  PKR {item.product.originalPrice.toFixed(2)}
+                                  Rs {item.product.originalPrice.toFixed(2)}
                                 </span>
                               )}
                             </div>
@@ -138,7 +138,7 @@ export default function CartPage() {
                           <div className="mt-2 text-right">
                             <span className="text-sm text-gray-600">
                               Item total:{" "}
-                              <span className="font-semibold">PKR {(item.product.price * item.quantity).toFixed(2)}</span>
+                              <span className="font-semibold">Rs {(item.product.price * item.quantity).toFixed(2)}</span>
                             </span>
                           </div>
                         </div>
@@ -163,7 +163,7 @@ export default function CartPage() {
                       {total > 75 ? (
                         <span className="text-green-600 font-medium">Free delivery included!</span>
                       ) : (
-                        <span>Add PKR {(75 - total).toFixed(2)} more for free delivery</span>
+                        <span>Add Rs {(75 - total).toFixed(2)} more for free delivery</span>
                       )}
                     </span>
                   </div>
@@ -183,7 +183,7 @@ export default function CartPage() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal ({itemCount} items)</span>
-                    <span className="font-medium">PKR {total.toFixed(2)}</span>
+                    <span className="font-medium">Rs {total.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Delivery</span>
@@ -194,7 +194,7 @@ export default function CartPage() {
                   <Separator />
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total</span>
-                    <span>PKR {finalTotal.toFixed(2)}</span>
+                    <span>Rs {finalTotal.toFixed(2)}</span>
                   </div>
                 </div>
 

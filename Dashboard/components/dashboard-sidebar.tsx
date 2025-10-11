@@ -24,6 +24,7 @@ import {
   FolderTree,
   MapPinIcon,
   UserCheck,
+  Mail,
 } from "lucide-react"
 
 const navigation = [
@@ -80,6 +81,12 @@ const navigation = [
     href: "/reviews",
     icon: MessageSquare,
     description: "Reviews & comments",
+  },
+  {
+    name: "Newsletter",
+    href: "/newsletter",
+    icon: Mail,
+    description: "Newsletter management",
   },
   {
     name: "Discounts",

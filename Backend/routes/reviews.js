@@ -420,4 +420,86 @@ router.delete('/:reviewId',
   }
 );
 
+// @route   PATCH /api/reviews/:reviewId/approve
+// @desc    Approve a review (Admin only)
+// @access  Private/Admin
+router.patch('/:reviewId/approve',
+  protect,
+  restrictTo('admin'),
+  validateObjectId('reviewId'),
+  async (req, res) => {
+    try {
+      const { reviewId } = req.params;
+      
+      const review = await Review.findById(reviewId);
+      if (!review) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Review not found'
+        });
+      }
+
+      review.isApproved = true;
+      await review.save();
+
+      await review.populate('user', 'name avatar');
+      await review.populate('product', 'name');
+
+      res.json({
+        status: 'success',
+        message: 'Review approved successfully',
+        data: {
+          review
+        }
+      });
+    } catch (error) {
+      console.error('Approve review error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server error during review approval'
+      });
+    }
+  }
+);
+
+// @route   PATCH /api/reviews/:reviewId/reject
+// @desc    Reject a review (Admin only)
+// @access  Private/Admin
+router.patch('/:reviewId/reject',
+  protect,
+  restrictTo('admin'),
+  validateObjectId('reviewId'),
+  async (req, res) => {
+    try {
+      const { reviewId } = req.params;
+      
+      const review = await Review.findById(reviewId);
+      if (!review) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Review not found'
+        });
+      }
+
+      review.isApproved = false;
+      review.isActive = false;
+      await review.save();
+
+      res.json({
+        status: 'success',
+        message: 'Review rejected successfully',
+        data: {
+          review
+        }
+      });
+    } catch (error) {
+      console.error('Reject review error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server error during review rejection'
+      });
+    }
+  }
+);
+
 export default router;

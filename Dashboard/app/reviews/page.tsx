@@ -119,18 +119,21 @@ function ReviewsContent() {
     }
   }
 
-  const handleRejectReview = async (reviewId: string, notes?: string) => {
+  const handleRejectReview = async (reviewId: string) => {
+    if (!confirm('Are you sure you want to reject this review?')) {
+      return
+    }
+
     try {
       setActionLoading(reviewId)
       const token = tokenManager.getToken()
       if (!token) return
 
-      const response = await adminApi.rejectReview(token, reviewId, notes)
+      const response = await adminApi.rejectReview(token, reviewId)
       
       if (response.status === 'success') {
         // Refresh reviews
         await fetchReviews()
-        setIsModalOpen(false)
       } else {
         setError(response.message || 'Failed to reject review')
       }
@@ -304,7 +307,7 @@ function ReviewsContent() {
                           <p className="text-muted-foreground mb-3">{review.comment}</p>
                           
                           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span>Product: {typeof review.product === 'object' ? review.product.name : 'Unknown Product'}</span>
+                            <span>Product: {typeof review.product === 'object' && review.product?.name ? review.product.name : 'Unknown Product'}</span>
                             <span>•</span>
                             <span>{new Date(review.createdAt).toLocaleDateString()}</span>
                             {review.helpfulVotes > 0 && (
@@ -339,14 +342,28 @@ function ReviewsContent() {
                           </Button>
                           
                           {review.isActive && !review.isApproved && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={() => handleApproveReview(review._id)}
-                              disabled={actionLoading === review._id}
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </Button>
+                            <>
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => handleApproveReview(review._id)}
+                                disabled={actionLoading === review._id}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                Approve
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRejectReview(review._id)}
+                                disabled={actionLoading === review._id}
+                                className="border-red-600 text-red-600 hover:bg-red-50"
+                              >
+                                <XCircle className="w-4 h-4 mr-1" />
+                                Reject
+                              </Button>
+                            </>
                           )}
                           
                           {review.isActive && (

@@ -1,4 +1,5 @@
 import { API_CONFIG } from '@/config/api';
+import { USE_TEST_DATA, getTestProducts, getTestCategories, getTestProductById, getTestProductsByCategory, getTestFeaturedProducts, simulateApiResponse } from '@/utils/testData';
 
 const API_BASE_URL = API_CONFIG.BASE_URL;
 
@@ -191,6 +192,92 @@ export const productsApi = {
     sort?: string;
     search?: string;
   }): Promise<ApiResponse<{ products: Product[]; pagination: any }>> => {
+    if (USE_TEST_DATA) {
+      let products = getTestProducts();
+      
+      // Apply filters
+      if (params?.category && params.category !== 'all') {
+        products = products.filter(p => p.category.toLowerCase() === params.category?.toLowerCase());
+      }
+      
+      if (params?.subcategory) {
+        products = products.filter(p => p.subcategory.toLowerCase() === params.subcategory?.toLowerCase());
+      }
+      
+      if (params?.featured) {
+        products = products.filter(p => p.isFeatured);
+      }
+      
+      if (params?.inStock !== undefined) {
+        products = products.filter(p => p.inStock === params.inStock);
+      }
+      
+      if (params?.minPrice) {
+        products = products.filter(p => p.price >= params.minPrice!);
+      }
+      
+      if (params?.maxPrice) {
+        products = products.filter(p => p.price <= params.maxPrice!);
+      }
+      
+      if (params?.search) {
+        const searchTerm = params.search.toLowerCase();
+        products = products.filter(p => 
+          p.name.toLowerCase().includes(searchTerm) ||
+          p.description.toLowerCase().includes(searchTerm) ||
+          p.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      // Apply sorting
+      if (params?.sort) {
+        switch (params.sort) {
+          case 'name_asc':
+            products.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+          case 'name_desc':
+            products.sort((a, b) => b.name.localeCompare(a.name));
+            break;
+          case 'price_asc':
+            products.sort((a, b) => a.price - b.price);
+            break;
+          case 'price_desc':
+            products.sort((a, b) => b.price - a.price);
+            break;
+          case 'rating_desc':
+            products.sort((a, b) => b.rating - a.rating);
+            break;
+          case 'newest':
+            products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            break;
+          case 'oldest':
+            products.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            break;
+        }
+      }
+      
+      // Apply pagination
+      const limit = params?.limit || 50;
+      const page = params?.page || 1;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedProducts = products.slice(startIndex, endIndex);
+      
+      return {
+        status: 'success' as const,
+        data: {
+          products: paginatedProducts,
+          pagination: {
+            currentPage: page,
+            totalPages: Math.ceil(products.length / limit),
+            totalProducts: products.length,
+            hasNextPage: endIndex < products.length,
+            hasPrevPage: page > 1
+          }
+        }
+      };
+    }
+    
     const searchParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -203,6 +290,29 @@ export const productsApi = {
   },
 
   getById: async (id: string, token?: string): Promise<ApiResponse<{ product: Product; relatedProducts: Product[] }>> => {
+    if (USE_TEST_DATA) {
+      const product = getTestProductById(id);
+      if (!product) {
+        return {
+          status: 'error' as const,
+          message: 'Product not found'
+        };
+      }
+      
+      // Get related products (same category, excluding current product)
+      const relatedProducts = getTestProducts()
+        .filter(p => p._id !== id && p.category === product.category)
+        .slice(0, 4);
+      
+      return {
+        status: 'success' as const,
+        data: {
+          product,
+          relatedProducts
+        }
+      };
+    }
+    
     const headers: HeadersInit = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
     
@@ -211,11 +321,30 @@ export const productsApi = {
   },
 
   getCategories: async (): Promise<ApiResponse<{ categories: any[] }>> => {
+    if (USE_TEST_DATA) {
+      const categories = getTestCategories();
+      return {
+        status: 'success' as const,
+        data: { categories }
+      };
+    }
+    
     const response = await fetch(`${API_BASE_URL}/products/categories`);
     return response.json();
   },
 
   getFeatured: async (limit?: number): Promise<ApiResponse<{ products: Product[] }>> => {
+    if (USE_TEST_DATA) {
+      let featuredProducts = getTestFeaturedProducts();
+      if (limit) {
+        featuredProducts = featuredProducts.slice(0, limit);
+      }
+      return {
+        status: 'success' as const,
+        data: { products: featuredProducts }
+      };
+    }
+    
     const params = limit ? `?limit=${limit}` : '';
     const response = await fetch(`${API_BASE_URL}/products/featured${params}`);
     return response.json();
@@ -578,5 +707,58 @@ export const tokenManager = {
   removeUser: (): void => {
     if (typeof window === 'undefined') return;
     localStorage.removeItem('auth_user');
+  },
+};
+
+// Newsletter API
+export interface NewsletterSubscriber {
+  _id: string;
+  email: string;
+  subscribedAt: string;
+  isActive: boolean;
+  source: string;
+}
+
+export const newsletterApi = {
+  // Subscribe to newsletter
+  subscribe: async (email: string, source: string = 'footer'): Promise<ApiResponse<{ subscriber: NewsletterSubscriber }>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, source }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return {
+        status: 'error',
+        message: error.message || 'Failed to subscribe to newsletter',
+      };
+    }
+  },
+
+  // Unsubscribe from newsletter
+  unsubscribe: async (email: string): Promise<ApiResponse<null>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/newsletter/unsubscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return {
+        status: 'error',
+        message: error.message || 'Failed to unsubscribe from newsletter',
+      };
+    }
   },
 };
