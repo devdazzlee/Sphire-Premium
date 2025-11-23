@@ -117,9 +117,9 @@ function ProductsPageContent() {
     <div className="min-h-screen bg-[#f5f1e8]">
       <AnimatedHeader />
 
-      <main className="container mx-auto px-4 py-12 pt-32">
+      <main className="container mx-auto px-4 py-12 pt-40">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-light tracking-wide text-gray-800 mb-4">Our Products</h1>
+          <h1 className="text-4xl md:text-5xl font-light tracking-wide text-gray-800 mb-4 pt-8">Our Products</h1>
           <p className="text-lg text-gray-600 font-light max-w-2xl mx-auto">
             Discover our carefully curated collection of premium beauty and skincare products
           </p>

@@ -53,9 +53,16 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: function() {
+      // Password is only required if user is not using OAuth
+      return !this.isOAuth;
+    },
     minlength: [6, 'Password must be at least 6 characters'],
     select: false
+  },
+  isOAuth: {
+    type: Boolean,
+    default: false
   },
   phone: {
     type: String,
@@ -126,7 +133,8 @@ userSchema.virtual('id').get(function() {
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  // Skip password hashing for OAuth users or if password is not modified
+  if (this.isOAuth || !this.isModified('password') || !this.password) return next();
   
   try {
     const salt = await bcrypt.genSalt(12);

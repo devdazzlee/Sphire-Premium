@@ -62,16 +62,16 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-all duration-300 ease-out animate-in fade-in-0"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-all duration-300 ease-out animate-in fade-in-0"
           onClick={onClose}
-          style={{ zIndex: 80 }}
+          style={{ zIndex: 150 }}
         />
       )}
 
       {/* Cart Drawer */}
-      <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 transform transition-all duration-500 ease-out ${
+      <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl transform transition-all duration-500 ease-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
-      }`} style={{ zIndex: 90 }}>
+      }`} style={{ zIndex: 151 }}>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className={`flex items-center justify-between p-6 border-b border-gray-200 transition-all duration-400 ease-out ${

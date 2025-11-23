@@ -176,6 +176,24 @@ export const authApi = {
     });
     return response.json();
   },
+
+  loginWithGoogle: async (firebaseToken: string, name: string, email: string, picture: string): Promise<ApiResponse<{ user: User; token: string }>> => {
+    const response = await fetch(`${API_BASE_URL}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firebaseToken, name, email, picture }),
+    });
+    return response.json();
+  },
+
+  loginWithFacebook: async (firebaseToken: string, name: string, email: string, picture: any): Promise<ApiResponse<{ user: User; token: string }>> => {
+    const response = await fetch(`${API_BASE_URL}/auth/facebook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firebaseToken, name, email, picture }),
+    });
+    return response.json();
+  },
 };
 
 // Products API

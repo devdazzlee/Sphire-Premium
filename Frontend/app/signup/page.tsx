@@ -15,6 +15,24 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react"
 export default function SignupPage() {
   const router = useRouter()
   const { signup, loginWithGoogle, loginWithFacebook, isLoading } = useAuth()
+
+  const handleGoogleSignup = async () => {
+    const result = await loginWithGoogle()
+    if (result.success) {
+      router.push("/")
+    } else {
+      setError(result.message || "Google signup failed")
+    }
+  }
+
+  const handleFacebookSignup = async () => {
+    const result = await loginWithFacebook()
+    if (result.success) {
+      router.push("/")
+    } else {
+      setError(result.message || "Facebook signup failed")
+    }
+  }
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -44,23 +62,6 @@ export default function SignupPage() {
     }
   }
 
-  const handleGoogleSignup = async () => {
-    const result = await loginWithGoogle()
-    if (result.success) {
-      router.push("/")
-    } else {
-      setError(result.message || "Google signup failed")
-    }
-  }
-
-  const handleFacebookSignup = async () => {
-    const result = await loginWithFacebook()
-    if (result.success) {
-      router.push("/")
-    } else {
-      setError(result.message || "Facebook signup failed")
-    }
-  }
 
   return (
     <div className="min-h-screen bg-[#f5f1e8] flex items-center justify-center p-4">
@@ -76,11 +77,11 @@ export default function SignupPage() {
         </div>
 
         <Card className="shadow-xl border-0">
-          <CardHeader className="space-y-1">
+          <CardHeader className="space-y-1 px-6 pt-6 pb-4">
             <CardTitle className="text-2xl font-light text-center">Sign Up</CardTitle>
             <CardDescription className="text-center">Enter your information to create your account</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-6 pb-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative">

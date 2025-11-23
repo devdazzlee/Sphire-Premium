@@ -29,12 +29,6 @@ export function AnimatedHeader() {
   useEffect(() => {
     if (!shouldShowHeader) return
 
-    const announcementBarHeight = 40
-    const mainHeaderHeight = 80;
-    const totalHeaderHeight = announcementBarHeight + mainHeaderHeight
-    
-    document.body.style.paddingTop = `${totalHeaderHeight}px`
-
     let ticking = false
     const handleScroll = () => {
       if (!ticking) {
@@ -54,18 +48,16 @@ export function AnimatedHeader() {
     window.addEventListener('openCartDrawer', handleOpenCartDrawer)
 
     const handleResize = () => {
-      const announcementBarHeight = 40
-      const mainHeaderHeight = ref.current?.offsetHeight || 80
-      const totalHeaderHeight = announcementBarHeight + mainHeaderHeight
-      document.body.style.paddingTop = `${totalHeaderHeight}px`
-      
       // Close mobile menu if screen becomes desktop size
       if (window.innerWidth >= 768 && isMenuOpen) {
         setIsMenuOpen(false)
-        document.body.style.overflow = 'unset'
-        document.body.style.position = ''
-        document.body.style.width = ''
-        document.body.style.top = ''
+        // Only reset overflow for mobile menu, not padding
+        if (document.body.style.overflow === 'hidden') {
+          document.body.style.overflow = ''
+          document.body.style.position = ''
+          document.body.style.width = ''
+          document.body.style.top = ''
+        }
       }
     }
 
@@ -76,8 +68,13 @@ export function AnimatedHeader() {
       window.removeEventListener("scroll", handleScroll)
       window.removeEventListener("resize", handleResize)
       window.removeEventListener('openCartDrawer', handleOpenCartDrawer)
-      document.body.style.paddingTop = "0px"
-      document.body.style.overflow = "unset"
+      // Only clean up overflow if it was set by this component
+      if (document.body.style.overflow === 'hidden') {
+        document.body.style.overflow = ''
+        document.body.style.position = ''
+        document.body.style.width = ''
+        document.body.style.top = ''
+      }
     }
   }, [shouldShowHeader, isMenuOpen])
 
@@ -114,6 +111,7 @@ export function AnimatedHeader() {
       // Opening menu - show menu first, then animate in
       setIsMenuOpen(true)
       setIsMenuAnimating(true)
+      // Only set overflow for mobile menu, not padding
       document.body.style.overflow = 'hidden'
       document.body.style.position = 'fixed'
       document.body.style.width = '100%'
@@ -132,7 +130,7 @@ export function AnimatedHeader() {
         setIsMenuOpen(false)
         setIsMenuAnimating(false)
         const scrollY = document.body.style.top
-        document.body.style.overflow = 'unset'
+        document.body.style.overflow = ''
         document.body.style.position = ''
         document.body.style.width = ''
         document.body.style.top = ''
@@ -169,24 +167,27 @@ export function AnimatedHeader() {
     <>
       <header
         ref={ref}
-        className={`border-b border-white/20 shadow-lg relative font-light fixed top-0 left-0 right-0 w-full transition-all duration-500 ease-out ${
-          isScrolled ? "backdrop-blur-xl bg-white/20 shadow-2xl border-white/30" : "backdrop-blur-lg bg-white/30"
+        className={`border-b border-gray-200/50 shadow-lg relative font-light sticky top-0 left-0 right-0 w-full transition-all duration-500 ease-out z-[100] ${
+          isScrolled 
+            ? "backdrop-blur-xl shadow-2xl border-gray-300/60" 
+            : "backdrop-blur-md"
         }`}
         style={{
           transformOrigin: "center top",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: isCartOpen ? 40 : 100,
-          margin: 0,
-          padding: 0,
+          backdropFilter: isScrolled ? "blur(20px) saturate(180%)" : "blur(12px) saturate(180%)",
+          WebkitBackdropFilter: isScrolled ? "blur(20px) saturate(180%)" : "blur(12px) saturate(180%)",
+          backgroundColor: isScrolled ? "rgba(255, 255, 255, 0.9)" : "rgba(255, 255, 255, 0.85)",
         }}
       >
         <div
-          className={`bg-gray-800 text-white text-center py-2 text-sm font-light tracking-wide transition-all duration-300 ${
+          className={`text-white text-center py-2 text-sm font-light tracking-wide transition-all duration-300 ${
             isScrolled ? "py-1 text-xs" : "py-2"
           }`}
+          style={{
+            background: "linear-gradient(135deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%)",
+            backdropFilter: "blur(10px) saturate(180%)",
+            WebkitBackdropFilter: "blur(10px) saturate(180%)",
+          }}
         >
           Shop our latest arrivals!
         </div>
@@ -195,60 +196,60 @@ export function AnimatedHeader() {
             <div className="flex items-center space-x-2 md:hidden flex-1 lg:hidden">
               <button
                 onClick={toggleMenu}
-                className={`header-item p-2.5 hover:bg-gray-50 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 group hamburger-button ${
+                className={`header-item p-2.5 hover:bg-gray-100 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 group hamburger-button ${
                   isMenuOpen ? 'menu-open' : ''
                 }`}
                 aria-label="Toggle mobile menu"
               >
                 <div className="w-5 h-5 flex flex-col justify-center items-center space-y-1">
-                  <div className={`hamburger-line w-5 h-0.5 bg-gray-700 group-hover:bg-black transition-all duration-300 ease-out ${
+                  <div className={`hamburger-line w-5 h-0.5 bg-gray-700 group-hover:bg-gray-900 transition-all duration-300 ease-out ${
                     isMenuOpen ? 'rotate-45 translate-y-1.5' : ''
                   }`}></div>
-                  <div className={`hamburger-line w-5 h-0.5 bg-gray-700 group-hover:bg-black transition-all duration-300 ease-out ${
+                  <div className={`hamburger-line w-5 h-0.5 bg-gray-700 group-hover:bg-gray-900 transition-all duration-300 ease-out ${
                     isMenuOpen ? 'opacity-0 scale-0' : ''
                   }`}></div>
-                  <div className={`hamburger-line w-5 h-0.5 bg-gray-700 group-hover:bg-black transition-all duration-300 ease-out ${
+                  <div className={`hamburger-line w-5 h-0.5 bg-gray-700 group-hover:bg-gray-900 transition-all duration-300 ease-out ${
                     isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''
                   }`}></div>
                 </div>
               </button>
               <button
                 onClick={toggleSearch}
-                className="header-item p-2.5 hover:bg-gray-50 rounded-xl transition-all duration-300 hover:scale-105 group"
+                className="header-item p-2.5 hover:bg-gray-100 rounded-xl transition-all duration-300 hover:scale-105 group"
                 aria-label="Toggle search"
               >
-                <Search className="w-5 h-5 text-gray-700 group-hover:text-black transition-colors duration-200 stroke-1" />
+                <Search className="w-5 h-5 text-gray-700 group-hover:text-gray-900 transition-colors duration-200 stroke-1" />
               </button>
             </div>
 
             <nav className="hidden md:flex items-center space-x-8">
               <Link
                 href="/"
-                className="header-item text-gray-700 hover:text-black transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
+                className="header-item text-gray-700 hover:text-gray-900 transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
               >
                 Home
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 href="/products"
-                className="header-item text-gray-700 hover:text-black transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
+                className="header-item text-gray-700 hover:text-gray-900 transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
               >
                 Products
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 href="/about"
-                className="header-item text-gray-700 hover:text-black transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
+                className="header-item text-gray-700 hover:text-gray-900 transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
               >
                 About us
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 href="/contact"
-                className="header-item text-gray-700 hover:text-black transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
+                className="header-item text-gray-700 hover:text-gray-900 transition-all duration-300 font-light text-lg tracking-wide relative group hover:-translate-y-0.5"
               >
                 Contact
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </nav>
 
@@ -268,16 +269,19 @@ export function AnimatedHeader() {
             <div className="flex items-center space-x-4 md:space-x-4 flex-1 justify-end">
               <button
                 onClick={toggleSearch}
-                className="header-item p-2.5 md:p-3 hover:bg-gray-50 rounded-xl transition-all duration-300 hover:scale-105 group hidden md:block"
+                className="header-item p-2.5 md:p-3 hover:bg-gray-100 rounded-xl transition-all duration-300 hover:scale-105 group hidden md:block"
               >
-                <Search className="w-5 h-5 md:w-6 md:h-6 text-gray-700 group-hover:text-black transition-colors duration-200 stroke-1" />
+                <Search className="w-5 h-5 md:w-6 md:h-6 text-gray-700 group-hover:text-gray-900 transition-colors duration-200 stroke-1" />
               </button>
               <div className="header-item">
                 <AccountDropdown />
               </div>
               <div className="header-item">
-                <Link href="/wishlist" className="relative group">
+                <Link href="/wishlist" className="relative group flex flex-col items-center gap-1 md:gap-2">
                   <Heart className="w-5 h-5 md:w-6 md:h-6 text-gray-700 group-hover:text-red-500 group-hover:fill-red-500 transition-all duration-200 stroke-1" />
+                  <span className="text-xs md:text-sm text-gray-700 group-hover:text-red-500 transition-colors duration-200 font-light hidden sm:block">
+                    Favourite
+                  </span>
                   {itemCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-in zoom-in">
                       {itemCount}
@@ -293,11 +297,14 @@ export function AnimatedHeader() {
         </div>
         {isSearchOpen && (
           <div
-            className={`absolute top-full left-0 right-0 border-t border-white/20 shadow-lg p-4 z-50 transition-all duration-300 ${
-              isScrolled ? "backdrop-blur-xl bg-white/20" : "backdrop-blur-lg bg-white/30"
+            className={`absolute top-full left-0 right-0 border-t border-gray-200/50 shadow-lg p-4 z-50 transition-all duration-300 ${
+              isScrolled ? "backdrop-blur-xl" : "backdrop-blur-md"
             }`}
             style={{
               zIndex: 150,
+              backdropFilter: "blur(20px) saturate(180%)",
+              WebkitBackdropFilter: "blur(20px) saturate(180%)",
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
             }}
           >
             <div className="max-w-2xl mx-auto">

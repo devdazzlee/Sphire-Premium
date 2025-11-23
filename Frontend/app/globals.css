@@ -146,3 +146,67 @@
   }
  
 }
+
+/* Header spacing - replaces body padding manipulation */
+/* Ensure body never gets padding-top or overflow set by JavaScript */
+body {
+  padding-top: 0 !important;
+  overflow: visible !important;
+  margin: 0 !important;
+}
+
+/* Remove default margins/padding from main */
+main {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Sticky header doesn't need margin-top since it's in the document flow */
+/* Glass morphism effect with white/light theme for sticky header */
+header[class*="sticky"] {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Enhanced glass effect on scroll - more opaque white background for better visibility */
+header[class*="sticky"]:has([style*="blur(20px)"]) {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Add spacing to prevent content collision with sticky header */
+/* Ensure header has proper z-index stacking */
+header[class*="sticky"] {
+  z-index: 100 !important;
+}
+
+/* Add padding-top to main content after sticky header to prevent heading collision */
+/* Header total height: ~40px (announcement) + ~88px (main) = ~128px, adding extra for safety */
+/* For pages where main is a sibling of header (like products page) */
+div:has(header[class*="sticky"]) > header[class*="sticky"] + main {
+  padding-top: 160px !important;
+}
+
+/* For pages where header is inside main */
+main:has(header[class*="sticky"]) > header[class*="sticky"] + section,
+main:has(header[class*="sticky"]) > header[class*="sticky"] + div:not(header) {
+  padding-top: 160px !important;
+}
+
+@media (max-width: 768px) {
+  div:has(header[class*="sticky"]) > header[class*="sticky"] + main {
+    padding-top: 140px !important;
+  }
+  
+  main:has(header[class*="sticky"]) > header[class*="sticky"] + section,
+  main:has(header[class*="sticky"]) > header[class*="sticky"] + div:not(header) {
+    padding-top: 140px !important;
+  }
+}

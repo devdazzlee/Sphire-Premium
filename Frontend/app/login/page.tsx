@@ -15,22 +15,6 @@ import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react"
 export default function LoginPage() {
   const router = useRouter()
   const { login, loginWithGoogle, loginWithFacebook, isLoading } = useAuth()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState("")
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-
-    const result = await login(email, password)
-    if (result.success) {
-      router.push("/")
-    } else {
-      setError(result.message || "Invalid email or password. Please try again.")
-    }
-  }
 
   const handleGoogleLogin = async () => {
     const result = await loginWithGoogle()
@@ -49,6 +33,23 @@ export default function LoginPage() {
       setError(result.message || "Facebook login failed")
     }
   }
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+
+    const result = await login(email, password)
+    if (result.success) {
+      router.push("/")
+    } else {
+      setError(result.message || "Invalid email or password. Please try again.")
+    }
+  }
+
 
   return (
     <div className="min-h-screen bg-[#f5f1e8] flex items-center justify-center p-4">
@@ -64,13 +65,13 @@ export default function LoginPage() {
         </div>
 
         <Card className="shadow-xl border-0">
-          <CardHeader className="space-y-1">
+          <CardHeader className="space-y-1 px-6 pt-6 pb-4">
             <CardTitle className="text-2xl font-light text-center">Sign In</CardTitle>
             <CardDescription className="text-center">
               Enter your email and password to access your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-6 pb-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative">

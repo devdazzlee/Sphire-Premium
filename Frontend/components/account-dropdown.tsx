@@ -19,12 +19,12 @@ export function AccountDropdown() {
     return (
       <div
         onClick={() => router.push("/login")}
-        className="header-item text-sm text-center text-gray-700 hover:text-black transition-colors cursor-pointer group"
+        className="header-item text-sm text-center text-gray-700 hover:text-gray-900 transition-colors cursor-pointer group"
       >
         <User className="w-6 h-6 mx-auto mb-1 group-hover:scale-110 transition-transform duration-200 stroke-1" />
         <p className="font-light hidden sm:block tracking-wide relative">
           Account
-          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
+          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
         </p>
       </div>
     )
@@ -38,19 +38,19 @@ export function AccountDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="header-item text-sm text-center text-gray-700 hover:text-black transition-colors cursor-pointer group">
+        <div className="header-item text-sm text-center text-gray-700 hover:text-gray-900 transition-colors cursor-pointer group">
           {user.avatar ? (
             <img
               src={user.avatar || "/placeholder.svg"}
               alt={user.name}
-              className="w-6 h-6 mx-auto mb-1 rounded-full group-hover:scale-110 transition-transform duration-200"
+              className="w-6 h-6 mx-auto mb-1 rounded-full group-hover:scale-110 transition-transform duration-200 border-2 border-gray-300"
             />
           ) : (
             <User className="w-6 h-6 mx-auto mb-1 group-hover:scale-110 transition-transform duration-200 stroke-1" />
           )}
           <p className="font-light hidden sm:block tracking-wide relative">
             {user.name.split(" ")[0]}
-            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
+            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full"></span>
           </p>
         </div>
       </DropdownMenuTrigger>

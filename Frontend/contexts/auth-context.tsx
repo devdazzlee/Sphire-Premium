@@ -135,47 +135,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginWithGoogle = async (): Promise<{ success: boolean; message?: string }> => {
     dispatch({ type: "LOGIN_START" })
 
-    // For now, return mock response since Google OAuth isn't implemented in backend
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const { signInWithPopup } = await import('firebase/auth')
+      const { auth, googleProvider } = await import('@/lib/firebase')
+      
+      const result = await signInWithPopup(auth, googleProvider)
+      const user = result.user
+      const idToken = await user.getIdToken()
 
-    const user: User = {
-      _id: "google_" + Date.now(),
-      name: "Google User",
-      email: "user@gmail.com",
-      avatar: "https://lh3.googleusercontent.com/a/default-user=s96-c",
-      role: "user",
-      addresses: [],
-      preferences: { newsletter: true, notifications: true },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      // Get user info from Firebase
+      const userInfo = {
+        name: user.displayName || 'User',
+        email: user.email || '',
+        picture: user.photoURL || '',
+        uid: user.uid
+      }
+
+      // Call backend API with Firebase token
+      const apiResponse = await authApi.loginWithGoogle(idToken, userInfo.name, userInfo.email, userInfo.picture)
+
+      if (apiResponse.status === 'success' && apiResponse.data) {
+        const { user: backendUser, token } = apiResponse.data
+        tokenManager.setToken(token)
+        tokenManager.setUser(backendUser)
+        dispatch({ type: "LOGIN_SUCCESS", payload: backendUser })
+        return { success: true }
+      } else {
+        dispatch({ type: "LOGIN_ERROR" })
+        return { success: false, message: apiResponse.message || 'Google login failed' }
+      }
+    } catch (error: any) {
+      dispatch({ type: "LOGIN_ERROR" })
+      if (error.code === 'auth/popup-closed-by-user') {
+        return { success: false, message: 'Login cancelled' }
+      }
+      return { success: false, message: error.message || 'Google login failed' }
     }
-
-    tokenManager.setUser(user)
-    dispatch({ type: "LOGIN_SUCCESS", payload: user })
-    return { success: true }
   }
 
   const loginWithFacebook = async (): Promise<{ success: boolean; message?: string }> => {
     dispatch({ type: "LOGIN_START" })
 
-    // For now, return mock response since Facebook OAuth isn't implemented in backend
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const { signInWithPopup } = await import('firebase/auth')
+      const { auth, facebookProvider } = await import('@/lib/firebase')
+      
+      const result = await signInWithPopup(auth, facebookProvider)
+      const user = result.user
+      const idToken = await user.getIdToken()
 
-    const user: User = {
-      _id: "facebook_" + Date.now(),
-      name: "Facebook User",
-      email: "user@facebook.com",
-      avatar: "https://graph.facebook.com/me/picture?type=large",
-      role: "user",
-      addresses: [],
-      preferences: { newsletter: true, notifications: true },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      // Get user info from Firebase
+      const userInfo = {
+        name: user.displayName || 'User',
+        email: user.email || '',
+        picture: user.photoURL || '',
+        uid: user.uid
+      }
+
+      // Call backend API with Firebase token
+      const apiResponse = await authApi.loginWithFacebook(idToken, userInfo.name, userInfo.email, userInfo.picture)
+
+      if (apiResponse.status === 'success' && apiResponse.data) {
+        const { user: backendUser, token } = apiResponse.data
+        tokenManager.setToken(token)
+        tokenManager.setUser(backendUser)
+        dispatch({ type: "LOGIN_SUCCESS", payload: backendUser })
+        return { success: true }
+      } else {
+        dispatch({ type: "LOGIN_ERROR" })
+        return { success: false, message: apiResponse.message || 'Facebook login failed' }
+      }
+    } catch (error: any) {
+      dispatch({ type: "LOGIN_ERROR" })
+      if (error.code === 'auth/popup-closed-by-user') {
+        return { success: false, message: 'Login cancelled' }
+      }
+      return { success: false, message: error.message || 'Facebook login failed' }
     }
-
-    tokenManager.setUser(user)
-    dispatch({ type: "LOGIN_SUCCESS", payload: user })
-    return { success: true }
   }
 
   const logout = () => {

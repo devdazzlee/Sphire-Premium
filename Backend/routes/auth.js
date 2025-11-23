@@ -233,4 +233,138 @@ router.post('/logout', protect, async (req, res) => {
   }
 });
 
+// @route   POST /api/auth/google
+// @desc    Login/Register with Google OAuth via Firebase
+// @access  Public
+router.post('/google', [
+  body('firebaseToken').notEmpty().withMessage('Firebase token is required'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    const { firebaseToken, name, email, picture } = req.body;
+
+    // Verify Firebase token (in production, verify with Firebase Admin SDK)
+    // For now, we'll trust the token from the client
+    // TODO: Add Firebase Admin SDK to verify tokens server-side
+
+    // Find or create user
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user
+      user = await User.create({
+        name: name || 'Google User',
+        email,
+        avatar: picture,
+        isOAuth: true,
+        isActive: true
+      });
+    } else {
+      // Update avatar if provided
+      if (picture && !user.avatar) {
+        user.avatar = picture;
+        await user.save();
+      }
+    }
+
+    // Generate JWT token
+    const token = generateToken(user._id);
+
+    // Update last login
+    await user.updateLastLogin();
+
+    res.json({
+      status: 'success',
+      message: 'Google login successful',
+      data: {
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+          addresses: user.addresses,
+          preferences: user.preferences,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        },
+        token
+      }
+    });
+  } catch (error) {
+    console.error('Google OAuth error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error during Google authentication'
+    });
+  }
+});
+
+// @route   POST /api/auth/facebook
+// @desc    Login/Register with Facebook OAuth via Firebase
+// @access  Public
+router.post('/facebook', [
+  body('firebaseToken').notEmpty().withMessage('Firebase token is required'),
+  handleValidationErrors
+], async (req, res) => {
+  try {
+    const { firebaseToken, name, email, picture } = req.body;
+
+    // Verify Firebase token (in production, verify with Firebase Admin SDK)
+    // For now, we'll trust the token from the client
+    // TODO: Add Firebase Admin SDK to verify tokens server-side
+
+    // Find or create user
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user
+      user = await User.create({
+        name: name || 'Facebook User',
+        email,
+        avatar: picture?.data?.url || picture,
+        isOAuth: true,
+        isActive: true
+      });
+    } else {
+      // Update avatar if provided
+      if (picture && !user.avatar) {
+        user.avatar = picture?.data?.url || picture;
+        await user.save();
+      }
+    }
+
+    // Generate JWT token
+    const token = generateToken(user._id);
+
+    // Update last login
+    await user.updateLastLogin();
+
+    res.json({
+      status: 'success',
+      message: 'Facebook login successful',
+      data: {
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+          addresses: user.addresses,
+          preferences: user.preferences,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        },
+        token
+      }
+    });
+  } catch (error) {
+    console.error('Facebook OAuth error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error during Facebook authentication'
+    });
+  }
+});
+
 export default router;
